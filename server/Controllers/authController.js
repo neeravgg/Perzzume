@@ -1,9 +1,8 @@
 const { v4: uuidv4 } = require('uuid');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const Booking = require('../Models/bookingModel');
-const Car = require('../Models/carModel');
+const Booking = require('../Models/aboutModels');
+const Car = require('../Models/contactModels');
 
-const bookCar = async (req, res) => {
+const adminLogin = async (req, res) => {
 	const { token } = req.body;
 	try {
 		const customer = await stripe.customers.create({
@@ -44,13 +43,5 @@ const bookCar = async (req, res) => {
 		return res.status(400).json(error);
 	}
 };
-const getAllBookings = async (req, res) => {
-	try {
-		const bookings = await Booking.find().populate('car').populate('user');
-		res.send(bookings);
-	} catch (error) {
-		return res.status(400).json(error);
-	}
-};
 
-module.exports = { bookCar, getAllBookings };
+module.exports = { adminLogin };
