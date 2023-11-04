@@ -1,6 +1,10 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const PORT = process.env.PORT || 4000;
+
+// database
+const connectDB = require('./Db/db');
 
 //  routers
 const authRouter = require('./Routes/authRoutes');
@@ -12,10 +16,8 @@ const skillRoutes = require('./Routes/skillRoutes');
 
 require('dotenv').config();
 app.use(cors());
-
 app.use(express.json());
 
-const port = process.env.PORT || 8000;
 
 app.use('/auth', authRouter);
 app.use('/about', aboutRoutes);
@@ -24,7 +26,6 @@ app.use('/experience', experienceRouter);
 app.use('/project', projectRouter);
 app.use('/skill', skillRoutes);
 
-
 // if (process.env.NODE_ENV === "production") {
 //   app.use(express.static("client/build"));
 
@@ -32,6 +33,19 @@ app.use('/skill', skillRoutes);
 //     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
 //   });
 // }
-app.listen(port, () => {
-	console.log(`Server is running at port: ${port} `);
-});
+// app.listen(port, () => {
+// 	console.log(`Server is running at port: ${port} `);
+// });
+
+const start = async () => {
+	try {
+		await connectDB();
+		app.listen(PORT, (err) => {
+			if (err) throw err;
+		});
+	} catch (err) {
+		console.log(err);
+	}
+};
+
+start();

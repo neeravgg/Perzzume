@@ -15,5 +15,4 @@ function connectDb() {
 	});
 }
 
-connectDb();
-module.exports = mongoose;
+module.exports = connectDb;
