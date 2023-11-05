@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
+mongoose.connect(process.env.MONGO_URL, {
+	useUnifiedTopology: true,
+	useNewUrlParser: true,
+});
+const connection = mongoose.connection;
 function connectDb() {
-	mongoose.connect(process.env.MONGO_URL, {
-		useUnifiedTopology: true,
-		useNewUrlParser: true,
-	});
-	const connection = mongoose.connection;
 	connection.on('connected', () => {
 		console.log('connection successfull');
 	});
@@ -15,4 +15,15 @@ function connectDb() {
 	});
 }
 
-module.exports = connectDb;
+function gfs() {
+	let gfs;
+	connection.once('open', () => {
+		// initialize stream
+		gfs = new mongoose.mongo.GridFSBucket(connection.db, {
+			bucketName: 'uploads',
+		});
+	});
+	return gfs;
+}
+
+module.exports = { connectDb, gfs };

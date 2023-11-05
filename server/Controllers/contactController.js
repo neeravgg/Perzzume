@@ -1,12 +1,20 @@
 const ContactModel = require('../Models/contactModels');
+const catchHelper = require('../responseHandler/catchHelper');
+const responseHandler = require('../responseHandler/sendResponse');
+const { StatusCodes } = require('http-status-codes');
 
 const saveContactForm = async (req, res) => {
 	try {
-		const newuser = new ContactModel(req.body);
-		await newuser.save();
-		res.send('User registered successfully');
+		const newContact = new ContactModel(req.body);
+		await newContact.save();
+		responseHandler.sendResponse(
+			res,
+			StatusCodes.OK,
+			'Note send successfully',
+			{}
+		);
 	} catch (error) {
-		return res.status(400).json(error);
+		catchHelper(res, error);
 	}
 };
 

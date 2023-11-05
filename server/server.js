@@ -4,7 +4,7 @@ const cors = require('cors');
 const PORT = process.env.PORT || 4000;
 
 // database
-const connectDB = require('./Db/db');
+const { connectDb } = require('./Db/db');
 
 //  routers
 const authRouter = require('./Routes/authRoutes');
@@ -16,7 +16,11 @@ const skillRoutes = require('./Routes/skillRoutes');
 const uploadRoutes = require('./Routes/uploadRoutes');
 
 require('dotenv').config();
-app.use(cors());
+app.use(
+	cors({
+		origin: '*',
+	})
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -41,7 +45,7 @@ app.use('/upload', uploadRoutes);
 
 const start = async () => {
 	try {
-		await connectDB();
+		await connectDb();
 		app.listen(PORT, (err) => {
 			if (err) throw err;
 		});

@@ -6,8 +6,9 @@ const CustomError = require('../errors');
 
 const getAboutDetail = async (req, res) => {
 	try {
-		const cars = await About.find();
-		res.send(cars);
+		const { userId } = req.body;
+		const data = await About.findOne({ user: userId });
+		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', data);
 	} catch (error) {
 		return res.status(400).json(error);
 	}
@@ -23,7 +24,7 @@ const addAboutDetail = async (req, res) => {
 		const about = new About({
 			description,
 			title,
-			profile_image: req.file.path,
+			// profile_image: req.file.path,
 			user: userId,
 		});
 		await about.save();
@@ -35,18 +36,23 @@ const addAboutDetail = async (req, res) => {
 
 const updateAboutDetail = async (req, res) => {
 	try {
-		const car = await About.findOne({ _id: req.body._id });
-		car.name = req.body.name;
-		car.image = req.body.image;
-		car.fuelType = req.body.fuelType;
-		car.rentPerHour = req.body.rentPerHour;
-		car.capacity = req.body.capacity;
-
-		await car.save();
-
-		res.send('Car details updated successfully');
+		const { description, title ,userId} = req.body;
+		const aboutExist = await About.exists({ user: userId });
+		if (!aboutExist) {
+			throw new CustomError.BadRequestError('About does not exist');
+		}
+		await About.findOneAndUpdate(
+			{ user: userId },
+			{
+				$set: {
+					description: description,
+					title: title,
+				},
+			}
+		);
+		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
 	} catch (error) {
-		return res.status(400).json(error);
+		catchHelper(res, error);
 	}
 };
 

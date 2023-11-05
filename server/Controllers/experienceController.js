@@ -1,39 +1,86 @@
+const { default: mongoose } = require('mongoose');
 const Experience = require('../Models/experienceModels');
-
-const getExperienceList = async (req, res) => {
-	try {
-		const cars = await Experience.find();
-		res.send(cars);
-	} catch (error) {
-		return res.status(400).json(error);
-	}
-};
+const catchHelper = require('../responseHandler/catchHelper');
+const responseHandler = require('../responseHandler/sendResponse');
+const { StatusCodes } = require('http-status-codes');
 
 const addExperience = async (req, res) => {
 	try {
-		const newcar = new Experience(req.body);
-		await newcar.save();
-		res.send('Car added successfully');
+		const newExperience = new Experience(req.body);
+		await newExperience.save();
+		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
 	} catch (error) {
-		return res.status(400).json(error);
+		catchHelper(res, error);
+	}
+};
+
+const getExperienceList = async (req, res) => {
+	try {
+		const { user } = req.body;
+		const pipeline = [
+			{
+				$match: { user: mongoose.Types.ObjectId(user) },
+			},
+			{
+				$limit: 5,
+			},
+		];
+
+		const data = await Experience.aggregate(pipeline);
+
+		if (!data || data.length === 0) {
+			return responseHandler.sendResponse(
+				res,
+				StatusCodes.NOT_FOUND,
+				'No matching sites found for the user!',
+				{}
+			);
+		}
+
+		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', data);
+	} catch (error) {
+		catchHelper(res, error);
 	}
 };
 
 const updateExperience = async (req, res) => {
 	try {
-		const car = await Experience.findOne({ _id: req.body._id });
-		car.name = req.body.name;
-		car.image = req.body.image;
-		car.fuelType = req.body.fuelType;
-		car.rentPerHour = req.body.rentPerHour;
-		car.capacity = req.body.capacity;
-
-		await car.save();
-
-		res.send('Car details updated successfully');
+		const { comapny, job_title, description, user, id } = req.body;
+		const experienceExist = await Experience.exists({ user: user, _id: id });
+		if (!experienceExist) {
+			throw new CustomError.BadRequestError('Experience does not exist');
+		}
+		await Experience.findOneAndUpdate(
+			{ user: user, _id: id },
+			{
+				$set: {
+					description: description,
+					job_title: job_title,
+					comapny: comapny,
+				},
+			}
+		);
+		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
 	} catch (error) {
-		return res.status(400).json(error);
+		catchHelper(res, error);
 	}
 };
 
-module.exports = { getExperienceList, addExperience, updateExperience };
+const deleteExperience = async (req, res) => {
+	try {
+		const { user, id } = req.body;
+
+		await Experience.findOneAndDelete({ user: user, _id: id });
+
+		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
+	} catch (error) {
+		catchHelper(res, error);
+	}
+};
+
+module.exports = {
+	getExperienceList,
+	addExperience,
+	updateExperience,
+	deleteExperience,
+};

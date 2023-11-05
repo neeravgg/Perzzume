@@ -7,14 +7,17 @@ const {
 const imageUploadMiddleware = require('../middleware/image-upload');
 const aboutController = require('../Controllers/aboutController');
 
-router.get('/getAboutDetail', aboutController.getAboutDetail);
+router.post('/getAboutDetail', aboutController.getAboutDetail);
 router.post(
 	'/addAboutDetail',
 	authenticateUser,
-	// isAuthenticated,
-	imageUploadMiddleware,
+	// imageUploadMiddleware,
 	aboutController.addAboutDetail
 );
-router.put('/updateAboutDetail', aboutController.updateAboutDetail);
+router.put(
+	'/updateAboutDetail',
+	authenticateUser,
+	aboutController.updateAboutDetail
+);
 
 module.exports = router;

@@ -1,14 +1,28 @@
 const multer = require('multer');
-const Image = require('../Models/imageModels'); // Import your Image model here
+const { GridFsStorage } = require('multer-gridfs-storage');
+const Image = require('../Models/imageModels');
+const crypto = require('crypto');
+const path = require('path');
 
 // Create a function that returns the middleware
 function imageUploadMiddleware(req, res, next) {
-	const storage = multer.diskStorage({
-		destination: function (req, file, cb) {
-			return cb(null, 'uploads/'); // Specify the destination directory for uploaded files
-		},
-		filename: function (req, file, cb) {
-			return cb(null, Date.now() + '-' + file.originalname);
+	// Set up Multer for file storage
+	const storage = new GridFsStorage({
+		url: process.env.MONGO_URL,
+		file: (req, file) => {
+			return new Promise((resolve, reject) => {
+				crypto.randomBytes(16, (err, buf) => {
+					if (err) {
+						return reject(err);
+					}
+					const filename = buf.toString('hex') + file.originalname;
+					const fileInfo = {
+						filename: filename,
+						bucketName: 'uploads',
+					};
+					resolve(fileInfo);
+				});
+			});
 		},
 	});
 
