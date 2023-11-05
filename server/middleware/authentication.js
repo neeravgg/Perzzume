@@ -1,13 +1,15 @@
 const CustomError = require('../errors');
 const { isTokenValid } = require('../utils');
 
-const Token = require('../models/Token');
+const Token = require('../Models/TokenModel');
 const { StatusCodes } = require('http-status-codes');
+const catchHelper = require('../responseHandler/catchHelper');
 
 const authenticateUser = async (req, res, next) => {
 	try {
 		const accessToken = req.headers['authorization'];
 		const bearerToken = accessToken.split(' ')[1];
+
 		if (accessToken) {
 			const payload = isTokenValid(bearerToken);
 			if (!payload) {
@@ -22,12 +24,14 @@ const authenticateUser = async (req, res, next) => {
 			return res.status(StatusCodes.UNAUTHORIZED).json({ error: 'Invalid Token' });
 		}
 	} catch (error) {
-		throw new CustomError.UnauthenticatedError('Authentication Invalid');
+		catchHelper(res, error);
 	}
 };
 
 const isAuthenticated = (req, res, next) => {
-	let checker = req.user.userId === req?.profile?._id.toString();
+	console.log('code phata',req.user.userId, req?.body)
+
+	let checker = req.user.userId == req?.body?.userId?.toString();
 	if (!checker) {
 		return res.status(StatusCodes.UNAUTHORIZED).json({
 			error: 'ACCESS DENIED',

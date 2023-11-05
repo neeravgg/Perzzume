@@ -6,6 +6,11 @@ const projectSchema = new mongoose.Schema(
 		image: { type: String, required: true },
 		code_link: { type: String, required: true },
 		demo_link: { type: String },
+		user: {
+			type: mongoose.Types.ObjectId,
+			ref: 'User',
+			required: true,
+		},
 	},
 	{ timestamps: true }
 );

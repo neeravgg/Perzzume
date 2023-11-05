@@ -1,4 +1,3 @@
-const { v4: uuidv4 } = require('uuid');
 const { createTokenPayload, createJWT } = require('../utils');
 const { StatusCodes } = require('http-status-codes');
 const responseHandler = require('../responseHandler/sendResponse');
@@ -49,10 +48,45 @@ const adminLogin = async (req, res) => {
 		//res.status(StatusCodes.OK).json({ accessToken: token });
 		responseHandler.sendResponse(res, StatusCodes.OK, 'successfully loggedIn', {
 			accessToken: token,
+			userId: user._id,
 		});
 	} catch (e) {
 		catchHelper(res, e);
 	}
 };
 
-module.exports = { adminLogin };
+const adminRegister = async (req, res) => {
+	try {
+		const { email, password } = req.body;
+
+		if (!email) {
+			throw new CustomError.BadRequestError('Please provide an email');
+		} else if (!password) {
+			throw new CustomError.BadRequestError('Please provide the password');
+		}
+
+		const emailAlreadyExists = await User.findOne({
+			email: new RegExp(`^${email}$`, 'i'),
+		});
+		if (emailAlreadyExists) {
+			throw new CustomError.BadRequestError('This email is already registered!');
+		}
+
+		let createObj = {
+			email,
+			password,
+			userType,
+		};
+		await User.create(createObj);
+		responseHandler.sendResponse(
+			res,
+			StatusCodes.CREATED,
+			'successfully! registered',
+			{}
+		);
+	} catch (error) {
+		catchHelper(res, error);
+	}
+};
+
+module.exports = { adminLogin, adminRegister };
