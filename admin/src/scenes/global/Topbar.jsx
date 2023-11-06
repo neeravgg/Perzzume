@@ -18,7 +18,7 @@ const Topbar = () => {
 
 	const handleLogout = async (e) => {
 		e.preventDefault();
-		if (token) {
+		if (!token) {
 			return;
 		} else {
 			const confirm = await ConfirmMessage(

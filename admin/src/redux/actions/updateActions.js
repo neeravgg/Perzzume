@@ -32,7 +32,7 @@ export const updateExperience = (reqObj) => async (dispatch) => {
 export const updateSkill = (reqObj) => async (dispatch) => {
 	dispatch({ type: 'LOADING', payload: true });
 	try {
-		const response = await axiosInstance.put(`project/updateProject`, reqObj);
+		const response = await axiosInstance.put(`skill/updateSkill`, reqObj);
 		message.success(response?.data?.message);
 		dispatch({ type: 'LOADING', payload: false });
 	} catch (error) {
@@ -44,7 +44,7 @@ export const updateSkill = (reqObj) => async (dispatch) => {
 export const updateProject = (reqObj) => async (dispatch) => {
 	dispatch({ type: 'LOADING', payload: true });
 	try {
-		const response = await axiosInstance.put(`skill/updateSkill`, reqObj);
+		const response = await axiosInstance.put(`project/updateProject`, reqObj);
 		message.success(response?.data?.message);
 		dispatch({ type: 'LOADING', payload: false });
 	} catch (error) {

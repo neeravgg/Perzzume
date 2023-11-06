@@ -31,6 +31,9 @@ const AboutForm = () => {
 		dispatch(getAbout());
 
 		navigate(-1);
+		setTimeout(() => {
+			window.location.reload();
+		}, 1000);
 	};
 
 	return (
