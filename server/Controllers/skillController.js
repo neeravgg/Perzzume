@@ -3,6 +3,8 @@ const { default: mongoose } = require('mongoose');
 const catchHelper = require('../responseHandler/catchHelper');
 const responseHandler = require('../responseHandler/sendResponse');
 const { StatusCodes } = require('http-status-codes');
+const CustomError = require('../errors');
+
 
 const getSkillList = async (req, res) => {
 	try {

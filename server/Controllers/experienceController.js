@@ -3,6 +3,8 @@ const Experience = require('../Models/experienceModels');
 const catchHelper = require('../responseHandler/catchHelper');
 const responseHandler = require('../responseHandler/sendResponse');
 const { StatusCodes } = require('http-status-codes');
+const CustomError = require('../errors');
+
 
 const addExperience = async (req, res) => {
 	try {
