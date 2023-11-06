@@ -1,3 +1,5 @@
 import AboutForm from './aboutForm';
-
-export { AboutForm };
+import ExperienceForm from './ExperienceForm';
+import SkillForm from './skillForm';
+import ProjectForm from './projectForm';
+export { AboutForm, ProjectForm, ExperienceForm, SkillForm };

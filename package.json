@@ -8,7 +8,7 @@
 		"server": "cd server && npm start",
 		"start": "concurrently  \"npm run server\" \"npm run client\"",
 		"build": "concurrently  \"cd client && npm run build\"",
-		"install": "concurrently  \"cd client && npm install\"  \"cd server && npm install\"",
+		"install": "concurrently  \"cd client && npm install --legacy-peer-deps\"  \"cd server && npm install --legacy-peer-deps\"",
 		"test": "echo \"Error: no test specified\" && exit 1"
 	},
 	"repository": {

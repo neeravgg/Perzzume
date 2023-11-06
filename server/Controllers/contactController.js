@@ -11,7 +11,7 @@ const saveContactForm = async (req, res) => {
 		responseHandler.sendResponse(
 			res,
 			StatusCodes.OK,
-			'Message send successfully',
+			'Thank you for contacting',
 			[]
 		);
 	} catch (error) {

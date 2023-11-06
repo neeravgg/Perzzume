@@ -13,7 +13,7 @@ import { getCookie } from './utils/cookieHelper';
 import { Routes, Navigate, useNavigate, Route, Outlet } from 'react-router-dom';
 import { AboutForm } from './scenes/forms';
 import ExperienceForm from './scenes/forms/ExperienceForm';
-import ProjectForm from './scenes/forms/projectForm';
+import ProjectForm from './scenes/forms/projectForm.js';
 import SkillForm from './scenes/forms/skillForm';
 
 function App() {

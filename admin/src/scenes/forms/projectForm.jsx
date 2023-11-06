@@ -29,6 +29,7 @@ const ProjectForm = () => {
 		: { title: '', description: '', code_link: '', demo_link: '' };
 
 	const handleFormSubmit = (values) => {
+		console.log('working')
 		const formValues = objectToFormData(values);
 
 		if (location.pathname.includes('update')) {
@@ -129,7 +130,7 @@ const ProjectForm = () => {
 };
 
 const checkoutSchema = yup.object().shape({
-	Title: yup.string().required('required'),
+	title: yup.string().required('required'),
 	description: yup.string().required('required'),
 	code_link: yup.string().required('required'),
 	demo_link: yup.string().required('required'),
