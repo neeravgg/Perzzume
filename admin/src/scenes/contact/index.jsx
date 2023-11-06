@@ -1,8 +1,9 @@
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import React, { useEffect, useState } from 'react';
 import { tokens } from '../../theme';
-import { mockDataContacts } from '../../data/mockData';
 import Header from '../../components/Header';
 import { useTheme } from '@mui/material';
+import { useDispatch, useSelector } from 'react-redux';
+import { getContact } from '../../redux/actions/getActions';
 import {
 	Box,
 	Table,
@@ -11,15 +12,42 @@ import {
 	TableContainer,
 	TableRow,
 	Paper,
+	Button,
+	TableHead,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { isEmptyObject } from '../../utils/methodHelpers';
+import { deleteExperience } from '../../redux/actions/deleteActions';
 
 const Contact = () => {
+	const navigate = useNavigate();
+	const dispatch = useDispatch();
 	const theme = useTheme();
+	const { contactData } = useSelector((state) => state.contactReducer);
 	const colors = tokens(theme.palette.mode);
+
+	const editNavigate = (e, id) => {
+		navigate('/update-experience-form', {
+			state: {
+				itemId: id,
+			},
+		});
+	};
+	const handleDelete = (e, id) => {
+		dispatch(deleteExperience({ id }));
+	};
+
+	const handleSubmit = () => {
+		navigate('/experience-form');
+	};
+
+	useEffect(() => {
+		if (!contactData?.length) dispatch(getContact());
+	}, [contactData]);
 
 	return (
 		<Box m='20px'>
-			<Header title='About' />
+			<Header title='Experience' />
 			<Box
 				m='40px 0 0 0'
 				height='75vh'
@@ -54,14 +82,21 @@ const Contact = () => {
 			>
 				<TableContainer component={Paper}>
 					<Table>
-						<TableBody>
-							<TableRow>
-								<TableCell>Column 1</TableCell>
-								<TableCell>Column 2</TableCell>
-								<TableCell>Column 3</TableCell>
-								<TableCell>Column 4</TableCell>
-								<TableCell>Column 5</TableCell>
+						<TableHead>
+							<TableRow style={{ backgroundColor: 'lightblue', color: 'white' }}>
+								<TableCell>name</TableCell>
+								<TableCell>email</TableCell>
+								<TableCell>message</TableCell>
 							</TableRow>
+						</TableHead>
+						<TableBody>
+							{contactData?.map((item) => (
+								<TableRow>
+									<TableCell>{item?.name}</TableCell>
+									<TableCell>{item?.email}</TableCell>
+									<TableCell>{item?.message}</TableCell>
+								</TableRow>
+							))}
 						</TableBody>
 					</Table>
 				</TableContainer>

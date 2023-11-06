@@ -4,37 +4,38 @@ import * as yup from 'yup';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Header from '../../components/Header';
 import { useDispatch, useSelector } from 'react-redux';
-import { addExperience } from '../../redux/actions/addingActions';
+import { addProject } from '../../redux/actions/addingActions';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { updateExperience } from '../../redux/actions/updateActions';
+import { updateProject } from '../../redux/actions/updateActions';
 import { objectToFormData } from '../../utils/methodHelpers';
-import { getExperience } from '../../redux/actions/getActions';
 
-const ExperienceForm = () => {
+const ProjectForm = () => {
 	const dispatch = useDispatch();
 	const location = useLocation();
 	const navigate = useNavigate();
 	const isNonMobile = useMediaQuery('(min-width:600px)');
-	const { experienceData } = useSelector((state) => state.experienceReducer);
+	const { projectData } = useSelector((state) => state.projectReducer);
+
 	const singleData =
 		location.pathname.includes('update') &&
-		experienceData?.find((item) => item?._id == location?.state?.itemId);
+		projectData?.find((item) => item?._id == location?.state?.itemId);
 	const initialValues = location.pathname.includes('update')
 		? {
-				comapny: singleData?.comapny,
+				title: singleData?.title,
 				description: singleData?.description,
-				job_title: singleData?.job_title,
+				code_link: singleData?.code_link,
+				demo_link: singleData?.demo_link,
 		  }
-		: { comapny: '', description: '', job_title: '' };
+		: { title: '', description: '', code_link: '', demo_link: '' };
 
 	const handleFormSubmit = (values) => {
 		const formValues = objectToFormData(values);
 
 		if (location.pathname.includes('update')) {
 			formValues.append('id', location?.state?.itemId);
-			dispatch(updateExperience(formValues));
+			dispatch(updateProject(formValues));
 		} else {
-			dispatch(addExperience(formValues));
+			dispatch(addProject(formValues));
 		}
 
 		navigate(-1);
@@ -45,7 +46,7 @@ const ExperienceForm = () => {
 
 	return (
 		<Box m='20px'>
-			<Header title='Experience Form' />
+			<Header title='Project Form' />
 
 			<Formik
 				onSubmit={handleFormSubmit}
@@ -65,26 +66,39 @@ const ExperienceForm = () => {
 								fullWidth
 								variant='outlined'
 								type='text'
-								label='comapny'
+								label='title'
 								onBlur={handleBlur}
 								onChange={handleChange}
-								value={values.comapny}
-								name='comapny'
-								error={!!touched.comapny && !!errors.comapny}
-								helperText={touched.comapny && errors.comapny}
+								value={values.title}
+								name='title'
+								error={!!touched.title && !!errors.title}
+								helperText={touched.title && errors.title}
 								sx={{ gridColumn: 'span 2' }}
 							/>
 							<TextField
 								fullWidth
 								variant='outlined'
 								multiline
-								label='job title'
+								label='code link'
 								onBlur={handleBlur}
 								onChange={handleChange}
-								value={values.job_title}
-								name='job_title'
-								error={!!touched.job_title && !!errors.job_title}
-								helperText={touched.job_title && errors.job_title}
+								value={values.code_link}
+								name='code_link'
+								error={!!touched.code_link && !!errors.code_link}
+								helperText={touched.code_link && errors.code_link}
+								sx={{ gridColumn: 'span 2' }}
+							/>
+							<TextField
+								fullWidth
+								variant='outlined'
+								multiline
+								label='demo link'
+								onBlur={handleBlur}
+								onChange={handleChange}
+								value={values.demo_link}
+								name='demo_link'
+								error={!!touched.demo_link && !!errors.demo_link}
+								helperText={touched.demo_link && errors.demo_link}
 								sx={{ gridColumn: 'span 2' }}
 							/>
 							<TextField
@@ -92,7 +106,7 @@ const ExperienceForm = () => {
 								variant='outlined'
 								multiline
 								rows={4}
-								label='About job'
+								label='About project'
 								onBlur={handleBlur}
 								onChange={handleChange}
 								value={values.description}
@@ -115,9 +129,10 @@ const ExperienceForm = () => {
 };
 
 const checkoutSchema = yup.object().shape({
-	comapny: yup.string().required('required'),
+	Title: yup.string().required('required'),
 	description: yup.string().required('required'),
-	job_title: yup.string().required('required'),
+	code_link: yup.string().required('required'),
+	demo_link: yup.string().required('required'),
 });
 
-export default ExperienceForm;
+export default ProjectForm;

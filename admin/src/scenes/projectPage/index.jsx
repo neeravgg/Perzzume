@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { tokens } from '../../theme';
-import Header from '../../components/Header';
+import { tokens } from '../../theme.js';
+import Header from '../../components/Header.jsx';
 import { useTheme } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { getExperience } from '../../redux/actions/getActions';
+import { getProject } from '../../redux/actions/getActions.js';
 import {
 	Box,
 	Table,
@@ -16,19 +16,18 @@ import {
 	TableHead,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { isEmptyObject } from '../../utils/methodHelpers';
-import { deleteExperience } from '../../redux/actions/deleteActions';
-import ConfirmMessage from '../../utils/confirmMessage';
+import { deleteProject } from '../../redux/actions/deleteActions.js';
+import ConfirmMessage from '../../utils/confirmMessage.js';
 
-const Experience = () => {
+const Project = () => {
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
 	const theme = useTheme();
-	const { experienceData } = useSelector((state) => state.experienceReducer);
+	const { projectData } = useSelector((state) => state.projectReducer);
 	const colors = tokens(theme.palette.mode);
 
 	const editNavigate = (e, id) => {
-		navigate('/update-experience-form', {
+		navigate('/update-project-form', {
 			state: {
 				itemId: id,
 			},
@@ -39,20 +38,20 @@ const Experience = () => {
 		const confirm = await ConfirmMessage(
 			'You want to permanently delete this item?'
 		);
-		if (confirm?.isConfirmed) dispatch(deleteExperience({ id }));
+		if (confirm?.isConfirmed) dispatch(deleteProject({ id }));
 	};
 
 	const handleSubmit = () => {
-		navigate('/experience-form');
+		navigate('/project-form');
 	};
 
 	useEffect(() => {
-		if (!experienceData?.length) dispatch(getExperience());
-	}, [experienceData]);
+		dispatch(getProject());
+	}, []);
 
 	return (
 		<Box m='20px'>
-			<Header title='Experience' />
+			<Header title='Project' />
 			<Box
 				m='40px 0 0 0'
 				height='75vh'
@@ -88,7 +87,7 @@ const Experience = () => {
 				<form onSubmit={handleSubmit}>
 					<Box display='flex' justifyContent='end' my='30px'>
 						<Button type='submit' color='secondary' variant='contained'>
-							Add Experience
+							Add Project
 						</Button>
 					</Box>
 				</form>
@@ -97,19 +96,21 @@ const Experience = () => {
 					<Table>
 						<TableHead>
 							<TableRow style={{ backgroundColor: 'lightblue', color: 'white' }}>
-								<TableCell>comapny</TableCell>
-								<TableCell>job title</TableCell>
+								<TableCell>Title</TableCell>
 								<TableCell>description</TableCell>
+								<TableCell>code link</TableCell>
+								<TableCell>demo link</TableCell>
 								<TableCell>update</TableCell>
 								<TableCell>delete</TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>
-							{experienceData?.map((item) => (
+							{projectData?.map((item) => (
 								<TableRow>
-									<TableCell>{item?.comapny}</TableCell>
-									<TableCell>{item?.job_title}</TableCell>
+									<TableCell>{item?.title}</TableCell>
 									<TableCell>{item?.description}</TableCell>
+									<TableCell>{item?.code_link}</TableCell>
+									<TableCell>{item?.demo_link}</TableCell>
 									<TableCell width={'10%'}>
 										<Button
 											color='secondary'
@@ -138,4 +139,4 @@ const Experience = () => {
 	);
 };
 
-export default Experience;
+export default Project;

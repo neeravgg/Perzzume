@@ -5,7 +5,7 @@ import Contact from './scenes/contact';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { ColorModeContext, useMode } from './theme';
 import About from './scenes/about';
-import Projects from './scenes/projects';
+import Projects from './scenes/projectPage';
 import Skills from './scenes/skills';
 import Experiences from './scenes/experiences';
 import LoginPage from './scenes/loginPage';
@@ -13,6 +13,8 @@ import { getCookie } from './utils/cookieHelper';
 import { Routes, Navigate, useNavigate, Route, Outlet } from 'react-router-dom';
 import { AboutForm } from './scenes/forms';
 import ExperienceForm from './scenes/forms/ExperienceForm';
+import ProjectForm from './scenes/forms/projectForm';
+import SkillForm from './scenes/forms/skillForm';
 
 function App() {
 	const [theme, colorMode] = useMode();
@@ -127,7 +129,7 @@ function App() {
 								path='/project-form'
 								element={
 									<ProtectedRoute>
-										<ExperienceForm />
+										<ProjectForm />
 									</ProtectedRoute>
 								}
 							/>
@@ -135,7 +137,7 @@ function App() {
 								path='/update-project-form'
 								element={
 									<ProtectedRoute>
-										<ExperienceForm />
+										<ProjectForm />
 									</ProtectedRoute>
 								}
 							/>
@@ -143,7 +145,7 @@ function App() {
 								path='/skill-form'
 								element={
 									<ProtectedRoute>
-										<ExperienceForm />
+										<SkillForm />
 									</ProtectedRoute>
 								}
 							/>
@@ -151,7 +153,7 @@ function App() {
 								path='/update-skill-form'
 								element={
 									<ProtectedRoute>
-										<ExperienceForm />
+										<SkillForm />
 									</ProtectedRoute>
 								}
 							/>

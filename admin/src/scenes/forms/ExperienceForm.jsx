@@ -8,7 +8,6 @@ import { addExperience } from '../../redux/actions/addingActions';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { updateExperience } from '../../redux/actions/updateActions';
 import { objectToFormData } from '../../utils/methodHelpers';
-import { getExperience } from '../../redux/actions/getActions';
 
 const ExperienceForm = () => {
 	const dispatch = useDispatch();
@@ -65,7 +64,7 @@ const ExperienceForm = () => {
 								fullWidth
 								variant='outlined'
 								type='text'
-								label='comapny'
+								label='company'
 								onBlur={handleBlur}
 								onChange={handleChange}
 								value={values.comapny}

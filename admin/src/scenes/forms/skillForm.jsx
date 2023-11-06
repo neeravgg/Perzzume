@@ -4,37 +4,38 @@ import * as yup from 'yup';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import Header from '../../components/Header';
 import { useDispatch, useSelector } from 'react-redux';
-import { addExperience } from '../../redux/actions/addingActions';
+import { addSkill } from '../../redux/actions/addingActions';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { updateExperience } from '../../redux/actions/updateActions';
+import { updateSkill } from '../../redux/actions/updateActions';
 import { objectToFormData } from '../../utils/methodHelpers';
 import { getExperience } from '../../redux/actions/getActions';
 
-const ExperienceForm = () => {
+const SkillForm = () => {
 	const dispatch = useDispatch();
 	const location = useLocation();
 	const navigate = useNavigate();
 	const isNonMobile = useMediaQuery('(min-width:600px)');
-	const { experienceData } = useSelector((state) => state.experienceReducer);
+	const { skillData } = useSelector((state) => state.skillReducer);
+
 	const singleData =
 		location.pathname.includes('update') &&
-		experienceData?.find((item) => item?._id == location?.state?.itemId);
+		skillData?.find((item) => item?._id == location?.state?.itemId);
+
 	const initialValues = location.pathname.includes('update')
 		? {
-				comapny: singleData?.comapny,
-				description: singleData?.description,
-				job_title: singleData?.job_title,
+				title: singleData?.title,
+				shadow_color: singleData?.shadow_color,
 		  }
-		: { comapny: '', description: '', job_title: '' };
+		: { title: '', shadow_color: '' };
 
 	const handleFormSubmit = (values) => {
 		const formValues = objectToFormData(values);
 
 		if (location.pathname.includes('update')) {
 			formValues.append('id', location?.state?.itemId);
-			dispatch(updateExperience(formValues));
+			dispatch(updateSkill(formValues));
 		} else {
-			dispatch(addExperience(formValues));
+			dispatch(addSkill(formValues));
 		}
 
 		navigate(-1);
@@ -45,7 +46,7 @@ const ExperienceForm = () => {
 
 	return (
 		<Box m='20px'>
-			<Header title='Experience Form' />
+			<Header title='Skill Form' />
 
 			<Formik
 				onSubmit={handleFormSubmit}
@@ -65,40 +66,26 @@ const ExperienceForm = () => {
 								fullWidth
 								variant='outlined'
 								type='text'
-								label='comapny'
+								label='title'
 								onBlur={handleBlur}
 								onChange={handleChange}
-								value={values.comapny}
-								name='comapny'
-								error={!!touched.comapny && !!errors.comapny}
-								helperText={touched.comapny && errors.comapny}
+								value={values.title}
+								name='title'
+								error={!!touched.title && !!errors.title}
+								helperText={touched.title && errors.title}
 								sx={{ gridColumn: 'span 2' }}
 							/>
 							<TextField
 								fullWidth
 								variant='outlined'
 								multiline
-								label='job title'
+								label='shadow color'
 								onBlur={handleBlur}
 								onChange={handleChange}
-								value={values.job_title}
-								name='job_title'
-								error={!!touched.job_title && !!errors.job_title}
-								helperText={touched.job_title && errors.job_title}
-								sx={{ gridColumn: 'span 2' }}
-							/>
-							<TextField
-								fullWidth
-								variant='outlined'
-								multiline
-								rows={4}
-								label='About job'
-								onBlur={handleBlur}
-								onChange={handleChange}
-								value={values.description}
-								name='description'
-								error={!!touched.description && !!errors.description}
-								helperText={touched.description && errors.description}
+								value={values.shadow_color}
+								name='shadow_color'
+								error={!!touched.shadow_color && !!errors.shadow_color}
+								helperText={touched.shadow_color && errors.shadow_color}
 								sx={{ gridColumn: 'span 2' }}
 							/>
 						</Box>
@@ -115,9 +102,8 @@ const ExperienceForm = () => {
 };
 
 const checkoutSchema = yup.object().shape({
-	comapny: yup.string().required('required'),
-	description: yup.string().required('required'),
-	job_title: yup.string().required('required'),
+	title: yup.string().required('required'),
+	shadow_color: yup.string().required('required'),
 });
 
-export default ExperienceForm;
+export default SkillForm;

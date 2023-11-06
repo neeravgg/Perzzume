@@ -8,32 +8,47 @@ import NotificationsOutlinedIcon from '@mui/icons-material/NotificationsOutlined
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import SearchIcon from '@mui/icons-material/Search';
-import { deleteAllCookies } from '../../utils/cookieHelper';
+import { deleteAllCookies, getCookie } from '../../utils/cookieHelper';
+import ConfirmMessage from '../../utils/confirmMessage';
 
 const Topbar = () => {
 	const theme = useTheme();
-	const colors = tokens(theme.palette.mode);
+	const token = getCookie('token');
 	const colorMode = useContext(ColorModeContext);
 
+	const handleLogout = async (e) => {
+		e.preventDefault();
+		if (token) {
+			return;
+		} else {
+			const confirm = await ConfirmMessage(
+				'You want to Logout?'
+			);
+			if (confirm?.isConfirmed) {
+				deleteAllCookies();
+				setTimeout(() => {
+					window.location.href = '/';
+				}, 500);
+			}
+		}
+	};
 	return (
 		<Box display='flex' justifyContent='end' p={2}>
 			{/* ICONS */}
 			<Box display='flex'>
-				<IconButton onClick={colorMode.toggleColorMode}>
+				<IconButton
+					onClick={() => {
+						colorMode.toggleColorMode();
+						colorMode.toggleCookieColorMode();
+					}}
+				>
 					{theme.palette.mode === 'dark' ? (
 						<DarkModeOutlinedIcon />
 					) : (
 						<LightModeOutlinedIcon />
 					)}
 				</IconButton>
-				<IconButton
-					onClick={() => {
-						deleteAllCookies();
-						setTimeout(() => {
-							window.location.href = '/';
-						}, 500);
-					}}
-				>
+				<IconButton onClick={handleLogout}>
 					<ExitToAppIcon />
 				</IconButton>
 			</Box>
