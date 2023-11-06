@@ -4,7 +4,7 @@ const aboutSchema = new mongoose.Schema(
 	{
 		title: { type: String, required: true },
 		description: { type: String, required: true },
-		profile_image: { type: String },
+		// profile_image: { type: String },
 		user: {
 			type: mongoose.Types.ObjectId,
 			ref: 'User',

@@ -8,6 +8,9 @@ const catchHelper = require('../responseHandler/catchHelper');
 const authenticateUser = async (req, res, next) => {
 	try {
 		const accessToken = req.headers['authorization'];
+		if (!accessToken) {
+			return res.status(StatusCodes.UNAUTHORIZED).json({ error: 'Authentication token missing' });
+		}
 		const bearerToken = accessToken.split(' ')[1];
 
 		if (accessToken) {
@@ -29,7 +32,7 @@ const authenticateUser = async (req, res, next) => {
 };
 
 const isAuthenticated = (req, res, next) => {
-	console.log('code phata',req.user.userId, req?.body)
+	console.log('code phata', req.user.userId, req?.body);
 
 	let checker = req.user.userId == req?.body?.userId?.toString();
 	if (!checker) {
