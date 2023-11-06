@@ -6,9 +6,21 @@ const { StatusCodes } = require('http-status-codes');
 
 const addExperience = async (req, res) => {
 	try {
-		const newExperience = new Experience(req.body);
-		await newExperience.save();
-		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
+		const count = await Experience.countDocuments();
+		const maxCount = 7;
+
+		if (count < maxCount) {
+			const newExperience = new Experience(req.body);
+			await newExperience.save();
+			responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', []);
+		} else {
+			responseHandler.sendResponse(
+				res,
+				StatusCodes.OK,
+				'Experience limit exceeded',
+				[]
+			);
+		}
 	} catch (error) {
 		catchHelper(res, error);
 	}
@@ -22,7 +34,12 @@ const getExperienceList = async (req, res) => {
 				$match: { user: mongoose.Types.ObjectId(user) },
 			},
 			{
-				$limit: 5,
+				$sort: {
+					createdAt: -1,
+				},
+			},
+			{
+				$limit: 6,
 			},
 		];
 
@@ -31,9 +48,9 @@ const getExperienceList = async (req, res) => {
 		if (!data || data.length === 0) {
 			return responseHandler.sendResponse(
 				res,
-				StatusCodes.NOT_FOUND,
-				'No matching sites found for the user!',
-				{}
+				StatusCodes.OK,
+				'No matching Experince found for the user!',
+				[]
 			);
 		}
 
@@ -60,7 +77,7 @@ const updateExperience = async (req, res) => {
 				},
 			}
 		);
-		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
+		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', []);
 	} catch (error) {
 		catchHelper(res, error);
 	}
@@ -72,7 +89,7 @@ const deleteExperience = async (req, res) => {
 
 		await Experience.findOneAndDelete({ user: user, _id: id });
 
-		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
+		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', []);
 	} catch (error) {
 		catchHelper(res, error);
 	}

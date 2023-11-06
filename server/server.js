@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const PORT = process.env.PORT || 4000;
+const bodyParser = require('body-parser');
 
 // database
 const { connectDb } = require('./Db/db');
@@ -16,13 +17,14 @@ const skillRoutes = require('./Routes/skillRoutes');
 const uploadRoutes = require('./Routes/uploadRoutes');
 
 require('dotenv').config();
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
 	cors({
 		origin: '*',
 	})
 );
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
 app.use('/auth', authRouter);
 app.use('/about', aboutRoutes);

@@ -12,7 +12,12 @@ const getSkillList = async (req, res) => {
 				$match: { user: mongoose.Types.ObjectId(user) },
 			},
 			{
-				$limit: 5,
+				$sort: {
+					createdAt: -1, 
+				},
+			},
+			{
+				$limit: 9,
 			},
 		];
 
@@ -21,9 +26,9 @@ const getSkillList = async (req, res) => {
 		if (!data || data.length === 0) {
 			return responseHandler.sendResponse(
 				res,
-				StatusCodes.NOT_FOUND,
+				StatusCodes.OK,
 				'No matching Skill found for the user!',
-				{}
+				[]
 			);
 		}
 
@@ -35,9 +40,21 @@ const getSkillList = async (req, res) => {
 
 const addSkill = async (req, res) => {
 	try {
-		const newSkill = new Skill(req.body);
-		await newSkill.save();
-		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
+		const count = await Skill.countDocuments();
+		const maxCount = 10;
+
+		if (count < maxCount) {
+			const newSkill = new Skill(req.body);
+			await newSkill.save();
+			responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', []);
+		} else {
+			responseHandler.sendResponse(
+				res,
+				StatusCodes.OK,
+				'Skill limit exceeded',
+				[]
+			);
+		}
 	} catch (error) {
 		catchHelper(res, error);
 	}
@@ -59,7 +76,7 @@ const updateSkill = async (req, res) => {
 				},
 			}
 		);
-		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
+		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', []);
 	} catch (error) {
 		catchHelper(res, error);
 	}
@@ -70,7 +87,7 @@ const deleteSkill = async (req, res) => {
 
 		await Skill.findOneAndDelete({ user: user, _id: id });
 
-		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
+		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', []);
 	} catch (error) {
 		catchHelper(res, error);
 	}

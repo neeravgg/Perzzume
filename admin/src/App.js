@@ -12,6 +12,7 @@ import LoginPage from './scenes/loginPage';
 import { getCookie } from './utils/cookieHelper';
 import { Routes, Navigate, useNavigate, Route, Outlet } from 'react-router-dom';
 import { AboutForm } from './scenes/forms';
+import ExperienceForm from './scenes/forms/ExperienceForm';
 
 function App() {
 	const [theme, colorMode] = useMode();
@@ -106,14 +107,54 @@ function App() {
 									</ProtectedRoute>
 								}
 							/>
-							{/* <Route
-								path='/projectForm'
+							<Route
+								path='/experience-form'
 								element={
 									<ProtectedRoute>
-										<rojectForm />
+										<ExperienceForm />
 									</ProtectedRoute>
 								}
-							/> */}
+							/>
+							<Route
+								path='/update-experience-form'
+								element={
+									<ProtectedRoute>
+										<ExperienceForm />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path='/project-form'
+								element={
+									<ProtectedRoute>
+										<ExperienceForm />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path='/update-project-form'
+								element={
+									<ProtectedRoute>
+										<ExperienceForm />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path='/skill-form'
+								element={
+									<ProtectedRoute>
+										<ExperienceForm />
+									</ProtectedRoute>
+								}
+							/>
+							<Route
+								path='/update-skill-form'
+								element={
+									<ProtectedRoute>
+										<ExperienceForm />
+									</ProtectedRoute>
+								}
+							/>
 							<Route path='/login' element={<LoginPage />} />
 						</Routes>
 					</main>

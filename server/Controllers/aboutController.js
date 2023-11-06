@@ -6,8 +6,8 @@ const CustomError = require('../errors');
 
 const getAboutDetail = async (req, res) => {
 	try {
-		const { userId } = req.body;
-		const data = await About.findOne({ user: userId });
+		const { user } = req.body;
+		const data = await About.findOne({ user: user });
 		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', data);
 	} catch (error) {
 		return res.status(400).json(error);
@@ -16,8 +16,8 @@ const getAboutDetail = async (req, res) => {
 
 const addAboutDetail = async (req, res) => {
 	try {
-		const { description, title, userId } = req.body;
-		const aboutExist = await About.exists({ user: userId });
+		const { description, title, user } = req.body;
+		const aboutExist = await About.exists({ user: user });
 		if (aboutExist) {
 			throw new CustomError.BadRequestError('About already exist');
 		}
@@ -25,7 +25,7 @@ const addAboutDetail = async (req, res) => {
 			description,
 			title,
 			// profile_image: req.file.path,
-			user: userId,
+			user: user,
 		});
 		await about.save();
 		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
@@ -36,13 +36,13 @@ const addAboutDetail = async (req, res) => {
 
 const updateAboutDetail = async (req, res) => {
 	try {
-		const { description, title ,userId} = req.body;
-		const aboutExist = await About.exists({ user: userId });
+		const { description, title, user } = req.body;
+		const aboutExist = await About.exists({ user: user });
 		if (!aboutExist) {
 			throw new CustomError.BadRequestError('About does not exist');
 		}
 		await About.findOneAndUpdate(
-			{ user: userId },
+			{ user: user },
 			{
 				$set: {
 					description: description,

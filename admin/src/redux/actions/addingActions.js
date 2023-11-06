@@ -1,17 +1,11 @@
-import axios from 'axios';
 import { message } from 'antd';
-import { getCookie } from '../../utils/cookieHelper';
 import { axiosInstance } from '../../utils/axiosHelper';
 
-const userId = getCookie('userId');
 
 export const addAbout = (reqObj) => async (dispatch) => {
 	dispatch({ type: 'LOADING', payload: true });
 	try {
-		const response = await axiosInstance.post(`about/addAboutDetail`, {
-			...reqObj,
-			userId,
-		});
+		const response = await axiosInstance.post(`about/addAboutDetail`, reqObj);
 		message.success(response?.data?.message);
 		dispatch({ type: 'LOADING', payload: false });
 	} catch (error) {
@@ -22,12 +16,8 @@ export const addAbout = (reqObj) => async (dispatch) => {
 };
 export const addProject = (reqObj) => async (dispatch) => {
 	dispatch({ type: 'LOADING', payload: true });
-	const userId = getCookie('userId');
 	try {
-		const response = await axios.post(`project/addProject`, {
-			...reqObj,
-			userId,
-		});
+		const response = await axiosInstance.post(`project/addProject`, reqObj);
 		message.success(response?.data?.message);
 		dispatch({ type: 'LOADING', payload: false });
 	} catch (error) {
@@ -38,12 +28,8 @@ export const addProject = (reqObj) => async (dispatch) => {
 };
 export const addExperience = (reqObj) => async (dispatch) => {
 	dispatch({ type: 'LOADING', payload: true });
-	const userId = getCookie('userId');
 	try {
-		const response = await axios.post(`experience/addExperience`, {
-			...reqObj,
-			userId,
-		});
+		const response = await axiosInstance.post(`experience/addExperience`, reqObj);
 		message.success(response?.data?.message);
 		dispatch({ type: 'LOADING', payload: false });
 	} catch (error) {
@@ -54,12 +40,8 @@ export const addExperience = (reqObj) => async (dispatch) => {
 };
 export const addSkill = (reqObj) => async (dispatch) => {
 	dispatch({ type: 'LOADING', payload: true });
-	const userId = getCookie('userId');
 	try {
-		const response = await axios.post(`skill/addSkill`, {
-			...reqObj,
-			userId,
-		});
+		const response = await axiosInstance.post(`skill/addSkill`, reqObj);
 		message.success(response?.data?.message);
 		dispatch({ type: 'LOADING', payload: false });
 	} catch (error) {

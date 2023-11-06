@@ -6,9 +6,20 @@ const { StatusCodes } = require('http-status-codes');
 
 const addProject = async (req, res) => {
 	try {
-		const newProject = new Project(req.body);
-		await newProject.save();
-		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
+		const count = await Project.countDocuments();
+		const maxCount = 7;
+		if (count < maxCount) {
+			const newProject = new Project(req.body);
+			await newProject.save();
+			responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', []);
+		} else {
+			responseHandler.sendResponse(
+				res,
+				StatusCodes.OK,
+				'Skill limit exceeded',
+				[]
+			);
+		}
 	} catch (error) {
 		catchHelper(res, error);
 	}
@@ -22,7 +33,12 @@ const getProjectList = async (req, res) => {
 				$match: { user: mongoose.Types.ObjectId(user) },
 			},
 			{
-				$limit: 5,
+				$sort: {
+					createdAt: -1,
+				},
+			},
+			{
+				$limit: 6,
 			},
 		];
 
@@ -31,9 +47,9 @@ const getProjectList = async (req, res) => {
 		if (!data || data.length === 0) {
 			return responseHandler.sendResponse(
 				res,
-				StatusCodes.NOT_FOUND,
+				StatusCodes.OK,
 				'No matching Project found for the user!',
-				{}
+				[]
 			);
 		}
 
@@ -45,7 +61,7 @@ const getProjectList = async (req, res) => {
 
 const updateProject = async (req, res) => {
 	try {
-		const { title, code_link, demo_link, user, id } = req.body;
+		const { title, code_link, demo_link, description, user, id } = req.body;
 		const ProjectExist = await Project.exists({ user: user, _id: id });
 		if (!ProjectExist) {
 			throw new CustomError.BadRequestError('Project does not exist');
@@ -57,10 +73,11 @@ const updateProject = async (req, res) => {
 					title: title,
 					code_link: code_link,
 					demo_link: demo_link,
+					description: description,
 				},
 			}
 		);
-		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
+		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', []);
 	} catch (error) {
 		catchHelper(res, error);
 	}
@@ -71,7 +88,7 @@ const deleteProject = async (req, res) => {
 
 		await Project.findOneAndDelete({ user: user, _id: id });
 
-		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
+		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', []);
 	} catch (error) {
 		catchHelper(res, error);
 	}
