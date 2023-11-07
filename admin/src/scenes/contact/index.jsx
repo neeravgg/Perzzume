@@ -86,15 +86,15 @@ const Contact = () => {
 							<TableRow style={{ backgroundColor: 'lightblue', color: 'white' }}>
 								<TableCell>name</TableCell>
 								<TableCell>email</TableCell>
-								<TableCell>message</TableCell>
+								<TableCell >message</TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>
 							{contactData?.map((item) => (
 								<TableRow>
-									<TableCell>{item?.name}</TableCell>
+									<TableCell width={'20%'}>{item?.name}</TableCell>
 									<TableCell>{item?.email}</TableCell>
-									<TableCell>{item?.message}</TableCell>
+									<TableCell width={'40%'}>{item?.message}</TableCell>
 								</TableRow>
 							))}
 						</TableBody>
