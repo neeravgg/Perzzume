@@ -24,9 +24,8 @@ const SkillForm = () => {
 	const initialValues = location.pathname.includes('update')
 		? {
 				title: singleData?.title,
-				shadow_color: singleData?.shadow_color,
 		  }
-		: { title: '', shadow_color: '' };
+		: { title: '' };
 
 	const handleFormSubmit = (values) => {
 		const formValues = objectToFormData(values);
@@ -75,19 +74,6 @@ const SkillForm = () => {
 								helperText={touched.title && errors.title}
 								sx={{ gridColumn: 'span 2' }}
 							/>
-							<TextField
-								fullWidth
-								variant='outlined'
-								multiline
-								label='shadow color'
-								onBlur={handleBlur}
-								onChange={handleChange}
-								value={values.shadow_color}
-								name='shadow_color'
-								error={!!touched.shadow_color && !!errors.shadow_color}
-								helperText={touched.shadow_color && errors.shadow_color}
-								sx={{ gridColumn: 'span 2' }}
-							/>
 						</Box>
 						<Box display='flex' justifyContent='end' mt='20px'>
 							<Button type='submit' color='secondary' variant='contained'>
@@ -103,7 +89,6 @@ const SkillForm = () => {
 
 const checkoutSchema = yup.object().shape({
 	title: yup.string().required('required'),
-	shadow_color: yup.string().required('required'),
 });
 
 export default SkillForm;

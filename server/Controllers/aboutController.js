@@ -48,7 +48,8 @@ const updateAboutDetail = async (req, res) => {
 					description: description,
 					title: title,
 				},
-			}
+			},
+			{ new: false }
 		);
 		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', {});
 	} catch (error) {

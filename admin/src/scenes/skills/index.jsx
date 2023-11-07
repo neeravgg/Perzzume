@@ -97,7 +97,7 @@ const Skills = () => {
 						<TableHead>
 							<TableRow style={{ backgroundColor: 'lightblue', color: 'white' }}>
 								<TableCell>title</TableCell>
-								<TableCell>shadow color</TableCell>
+								{/* <TableCell>shadow color</TableCell> */}
 								<TableCell>update</TableCell>
 								<TableCell>delete</TableCell>
 							</TableRow>
@@ -106,7 +106,7 @@ const Skills = () => {
 							{skillData?.map((item) => (
 								<TableRow>
 									<TableCell>{item?.title}</TableCell>
-									<TableCell>{item?.shadow_color}</TableCell>
+									{/* <TableCell>{item?.shadow_color}</TableCell> */}
 									<TableCell width={'10%'}>
 										<Button
 											color='secondary'

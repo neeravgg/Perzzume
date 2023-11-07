@@ -107,10 +107,10 @@ const Project = () => {
 						<TableBody>
 							{projectData?.map((item) => (
 								<TableRow>
-									<TableCell>{item?.title}</TableCell>
-									<TableCell>{item?.description}</TableCell>
-									<TableCell>{item?.code_link}</TableCell>
-									<TableCell>{item?.demo_link}</TableCell>
+									<TableCell width={'15%'}>{item?.title}</TableCell>
+									<TableCell width={'30%'}>{item?.description}</TableCell>
+									<TableCell width={'15%'}>{item?.code_link}</TableCell>
+									<TableCell width={'15%'}>{item?.demo_link}</TableCell>
 									<TableCell width={'10%'}>
 										<Button
 											color='secondary'

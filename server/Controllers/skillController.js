@@ -5,7 +5,6 @@ const responseHandler = require('../responseHandler/sendResponse');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 
-
 const getSkillList = async (req, res) => {
 	try {
 		const { user } = req.body;
@@ -15,7 +14,7 @@ const getSkillList = async (req, res) => {
 			},
 			{
 				$sort: {
-					createdAt: -1, 
+					createdAt: -1,
 				},
 			},
 			{
@@ -64,7 +63,7 @@ const addSkill = async (req, res) => {
 
 const updateSkill = async (req, res) => {
 	try {
-		const { title, shadow_color, user, id } = req.body;
+		const { title, user, id } = req.body;
 		const SkillExist = await Skill.exists({ user: user, _id: id });
 		if (!SkillExist) {
 			throw new CustomError.BadRequestError('Skill does not exist');
@@ -74,9 +73,10 @@ const updateSkill = async (req, res) => {
 			{
 				$set: {
 					title: title,
-					shadow_color: shadow_color,
+					// shadow_color: shadow_color,
 				},
-			}
+			},
+			{ new: false }
 		);
 		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', []);
 	} catch (error) {

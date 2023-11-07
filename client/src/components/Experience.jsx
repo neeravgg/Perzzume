@@ -16,7 +16,7 @@ const Experience = () => {
       className='bg-gradient-to-b from-black to-gray-800 w-full text-white md:h-screen'
     >
       <div className='max-w-screen-lg p-4 mx-auto flex flex-col justify-center w-full h-full'>
-        <div className='pb-8'>
+        <div className='pb-'>
           <p className='text-4xl font-bold inline border-b-4 border-gray-500'>
             Experience
           </p>
@@ -27,7 +27,7 @@ const Experience = () => {
           {experienceData.map(({ _id: id, src, job_title: title, comapny, description }) => (
             <div
               key={id}
-              className='shadow-md shadow-gray-600 rounded-lg text-center'
+              className='shadow-md shadow-yellow-500 rounded-lg text-center p-2'
             >
               {/* <img
                 src={src}

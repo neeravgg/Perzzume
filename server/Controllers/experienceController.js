@@ -5,7 +5,6 @@ const responseHandler = require('../responseHandler/sendResponse');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 
-
 const addExperience = async (req, res) => {
 	try {
 		const count = await Experience.countDocuments();
@@ -77,7 +76,8 @@ const updateExperience = async (req, res) => {
 					job_title: job_title,
 					comapny: comapny,
 				},
-			}
+			},
+			{ new: false }
 		);
 		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', []);
 	} catch (error) {

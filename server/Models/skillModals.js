@@ -4,7 +4,7 @@ const skillSchema = new mongoose.Schema(
 	{
 		title: { type: String, required: true },
 		// icon_image: { type: String, required: true },
-		shadow_color: { type: String, required: true },
+		// shadow_color: { type: String, required: true },
 		user: {
 			type: mongoose.Types.ObjectId,
 			ref: 'User',

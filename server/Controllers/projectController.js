@@ -76,7 +76,8 @@ const updateProject = async (req, res) => {
 					demo_link: demo_link,
 					description: description,
 				},
-			}
+			},
+			{ new: false }
 		);
 		responseHandler.sendResponse(res, StatusCodes.OK, 'Success!', []);
 	} catch (error) {
