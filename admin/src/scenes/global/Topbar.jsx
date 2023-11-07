@@ -21,9 +21,7 @@ const Topbar = () => {
 		if (!token) {
 			return;
 		} else {
-			const confirm = await ConfirmMessage(
-				'You want to Logout?'
-			);
+			const confirm = await ConfirmMessage('You want to Logout?');
 			if (confirm?.isConfirmed) {
 				deleteAllCookies();
 				setTimeout(() => {
@@ -39,7 +37,6 @@ const Topbar = () => {
 				<IconButton
 					onClick={() => {
 						colorMode.toggleColorMode();
-						colorMode.toggleCookieColorMode();
 					}}
 				>
 					{theme.palette.mode === 'dark' ? (
