@@ -1,4 +1,4 @@
-import { router } from '../server'
+import { router } from '../../server'
 
 import { adminLogin, adminRegister } from "../controllers/auth.controller";
 

@@ -1,10 +1,13 @@
-import { router } from '../server'
+import { router } from '../../server'
 
-const contactController = require('../Controllers/contactController');
-const { authenticateUser } = require('../middleware/authentication');
+import {
+    saveContactForm,
+    getContactList
+} from '../controllers/contact.controller';
+import { authenticateUser } from '../middlewares/authentication.middleware';
 
-router.post('/sendContact', contactController.saveContactForm);
-router.post('/getContact', authenticateUser, contactController.getContactList);
+router.post('/sendContact', saveContactForm);
+router.post('/getContact', authenticateUser, getContactList);
 
 
 export default router;

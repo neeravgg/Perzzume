@@ -1,4 +1,4 @@
-import * as jwt from 'jsonwebtoken';
+const jwt = require('jsonwebtoken')
 
 const createJWT = (payload: Record<string, unknown>, expiresIn: string = '15d'): string => {
     const token = jwt.sign(payload, process.env.JWT_SECRET, {

@@ -1,23 +1,26 @@
-import { router } from '../server'
+import { router } from '../../server'
 
-const {
+import {
 	isAuthenticated,
 	authenticateUser,
-} = require('../middleware/authentication');
-const imageUploadMiddleware = require('../middleware/image-upload');
-const aboutController = require('../Controllers/aboutController');
+} from '../middlewares/authentication.middleware';
+import {
+	getAboutDetail,
+	addAboutDetail,
+	updateAboutDetail
+} from '../controllers/about.controller';
 
-router.post('/getAboutDetail', aboutController.getAboutDetail);
+router.post('/getAboutDetail', getAboutDetail);
 router.post(
 	'/addAboutDetail',
 	authenticateUser,
 	// imageUploadMiddleware,
-	aboutController.addAboutDetail
+	addAboutDetail
 );
 router.put(
 	'/updateAboutDetail',
 	authenticateUser,
-	aboutController.updateAboutDetail
+	updateAboutDetail
 );
 
 export default router;

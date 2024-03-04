@@ -9,7 +9,9 @@ const authenticateUser = async (req, res, next) => {
 	try {
 		const accessToken = req.headers['authorization'];
 		if (!accessToken) {
-			return res.status(StatusCodes.UNAUTHORIZED).json({ error: 'Authentication token missing' });
+			return res
+				.status(StatusCodes.UNAUTHORIZED)
+				.json({ error: 'Authentication token missing' });
 		}
 		const bearerToken = accessToken.split(' ')[1];
 

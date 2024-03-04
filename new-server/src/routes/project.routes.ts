@@ -1,12 +1,18 @@
-import { router } from '../server'
+import { router } from '../../server'
 
-const projectController = require('../Controllers/projectController');
-const { authenticateUser } = require('../middleware/authentication');
+import {
+    getProjectList,
+    addProject,
+    updateProject,
+    deleteProject
+} from '../controllers/project.controller';
+import { authenticateUser } from '../middlewares/authentication.middleware';
 
-router.post('/getProjectList', projectController.getProjectList);
-router.post('/addProject', authenticateUser, projectController.addProject);
-router.put('/updateProject', authenticateUser, projectController.updateProject);
-router.put('/deleteProject', authenticateUser, projectController.deleteProject);
+
+router.post('/getProjectList', getProjectList);
+router.post('/addProject', authenticateUser, addProject);
+router.put('/updateProject', authenticateUser, updateProject);
+router.put('/deleteProject', authenticateUser, deleteProject);
 
 
 export default router;

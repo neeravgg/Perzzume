@@ -1,14 +1,12 @@
-import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { sendError, sendResponse } from '../handlers/response.handler';
 import { createJWT } from '../helpers/token.helper';
 import { ErrorHelper } from "../helpers/error.helper"
-import { prisma } from "../server"
+import { prisma } from "../../server"
 import { loginValidate, registerValidate } from "../validators/auth.validation"
+import { controller_interface } from '../types/controller.interface'
 
-
-
-const adminLogin = async (req: Request, res: Response): Promise<void> => {
+const adminLogin: controller_interface['basicController'] = async (req, res) => {
     try {
         const { error } = loginValidate.validate(req.body);
         if (error) {
@@ -54,7 +52,7 @@ const adminLogin = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-const adminRegister = async (req: Request, res: Response): Promise<void> => {
+const adminRegister: controller_interface['basicController'] = async (req, res) => {
     try {
         const { error } = registerValidate.validate(req.body);
         if (error) {

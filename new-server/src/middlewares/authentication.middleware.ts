@@ -1,46 +1,52 @@
-const CustomError = require('../errors');
-const { isTokenValid } = require('../utils');
+import { StatusCodes } from 'http-status-codes';
+import { ErrorHelper } from '../helpers/error.helper';
+import { sendError, sendResponse } from '../handlers/response.handler';
+import { AuthMiddlewareInterface } from '../types/middleware.interface';
+import { isTokenValid } from '../helpers/token.helper'
 
-const Token = require('../Models/TokenModel');
-const { StatusCodes } = require('http-status-codes');
-const catchHelper = require('../responseHandler/catchHelper');
 
-const authenticateUser = async (req, res, next) => {
+const authenticateUser: AuthMiddlewareInterface['authenticate'] = async (req, res, next) => {
     try {
-        const accessToken = req.headers['authorization'];
+        const accessToken = req.headers['authorization'] as string | undefined;
         if (!accessToken) {
-            return res.status(StatusCodes.UNAUTHORIZED).json({ error: 'Authentication token missing' });
+            throw new ErrorHelper('Invalid Credentials', StatusCodes.UNAUTHORIZED);
         }
+
         const bearerToken = accessToken.split(' ')[1];
 
         if (accessToken) {
             const payload = isTokenValid(bearerToken);
             if (!payload) {
-                return res
-                    .status(StatusCodes.UNAUTHORIZED)
-                    .json({ msg: 'PL:Invalid Token' });
+                throw new ErrorHelper('Invalid Credentials', StatusCodes.UNAUTHORIZED);
+
             }
 
-            req.user = payload;
+            res.locals.user = payload;
             return next();
         } else {
-            return res.status(StatusCodes.UNAUTHORIZED).json({ error: 'Invalid Token' });
+            throw new ErrorHelper('Invalid Credentials', StatusCodes.UNAUTHORIZED);
+
         }
     } catch (error) {
-        catchHelper(res, error);
+        sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, (error as Error).message, false, error);
     }
 };
 
-const isAuthenticated = (req, res, next) => {
-    console.log('code phata', req.user.userId, req?.body);
+const isAuthenticated: AuthMiddlewareInterface['authenticationCheck'] = (req, res, next) => {
 
-    let checker = req.user.userId == req?.body?.userId?.toString();
-    if (!checker) {
-        return res.status(StatusCodes.UNAUTHORIZED).json({
-            error: 'ACCESS DENIED',
-        });
+    try {
+        const checker = res.locals.user.id === (req?.body?.userId || null)?.toString();
+        if (!checker) {
+            throw new ErrorHelper('Unauthorized Access', StatusCodes.UNAUTHORIZED);
+
+        }
+        next();
+
+    } catch (error) {
+        sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, (error as Error).message, false, error);
+
     }
-    next();
 };
 
-module.exports = { authenticateUser, isAuthenticated };
+
+export { authenticateUser, isAuthenticated };

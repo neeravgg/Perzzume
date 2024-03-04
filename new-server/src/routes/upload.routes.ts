@@ -1,6 +1,7 @@
-import { router } from '../server'
+import { router } from '../../server'
 
-const { authenticateUser } = require('../middleware/authentication');
+import { authenticateUser } from '../middlewares/authentication.middleware';
+
 
 router.post(
 	'/upload-pinata',

@@ -1,23 +1,29 @@
-import { router } from '../server'
+import { router } from '../../server'
 
-const experienceController = require('../Controllers/experienceController');
-const { authenticateUser } = require('../middleware/authentication');
+import {
+	getExperienceList,
+	addExperience,
+	updateExperience,
+	deleteExperience
+} from '../controllers/experience.controller';
 
-router.post('/getExperienceList', experienceController.getExperienceList);
+import { authenticateUser } from '../middlewares/authentication.middleware';
+
+router.post('/getExperienceList', getExperienceList);
 router.post(
 	'/addExperience',
 	authenticateUser,
-	experienceController.addExperience
+	addExperience
 );
 router.put(
 	'/updateExperience',
 	authenticateUser,
-	experienceController.updateExperience
+	updateExperience
 );
 router.put(
 	'/deleteExperience',
 	authenticateUser,
-	experienceController.deleteExperience
+	deleteExperience
 );
 
 

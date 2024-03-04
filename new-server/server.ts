@@ -2,12 +2,12 @@ import express from "express"
 import * as dotenv from "dotenv"
 import { PrismaClient } from "@prisma/client";
 import { StatusCodes } from "http-status-codes"
-import aboutRoutes from './routes/about.routes'
-import authRoutes from './routes/auth.routes'
-import contactRoutes from './routes/contact.routes'
-import experienceRoutes from './routes/experience.routes'
-import projectRoutes from './routes/project.routes'
-import skillRoutes from './routes/skill.routes'
+import aboutRoutes from './src/routes/about.routes'
+import authRoutes from './src/routes/auth.routes'
+import contactRoutes from './src/routes/contact.routes'
+import experienceRoutes from './src/routes/experience.routes'
+import projectRoutes from './src/routes/project.routes'
+import skillRoutes from './src/routes/skill.routes'
 // import uploadRoutes from './routes/about.routes'
 
 dotenv.config()
