@@ -2,7 +2,10 @@ import { StatusCodes } from 'http-status-codes';
 import { ErrorHelper } from '../helpers/error.helper';
 import { sendError, sendResponse } from '../handlers/response.handler';
 import { AuthMiddlewareInterface } from '../types/middleware.interface';
-import { isTokenValid } from '../helpers/token.helper'
+import { isTokenValid, tokenDbCheck } from '../helpers/token.helper'
+import { prisma } from '../../server';
+import { User } from '@prisma/client';
+import { modal_interface } from '../types/modal.interface';
 
 
 const authenticateUser: AuthMiddlewareInterface['authenticate'] = async (req, res, next) => {
@@ -14,19 +17,12 @@ const authenticateUser: AuthMiddlewareInterface['authenticate'] = async (req, re
 
         const bearerToken = accessToken.split(' ')[1];
 
-        if (accessToken) {
-            const payload = isTokenValid(bearerToken);
-            if (!payload) {
-                throw new ErrorHelper('Invalid Credentials', StatusCodes.UNAUTHORIZED);
 
-            }
+        const { decoded, existingToken } = await tokenDbCheck(bearerToken)
 
-            res.locals.user = payload;
-            return next();
-        } else {
-            throw new ErrorHelper('Invalid Credentials', StatusCodes.UNAUTHORIZED);
+        req.body.user = decoded;
+        return next();
 
-        }
     } catch (error) {
         sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, (error as Error).message, false, error);
     }

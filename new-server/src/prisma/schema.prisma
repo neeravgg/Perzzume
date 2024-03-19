@@ -64,11 +64,11 @@ model Skill {
 }
 
 model Token {
-  id           Int     @id @default(autoincrement())
-  token        String
-  ip           String
-  user_agent   String
-  valid_status Boolean @default(true)
-  user         User    @relation(fields: [user_id], references: [id])
-  user_id      Int     @unique
+  id            Int     @id @default(autoincrement())
+  refresh_token String
+  ip            String
+  user_agent    String
+  valid_status  Boolean @default(true)
+  user          User    @relation(fields: [user_id], references: [id])
+  user_id       Int     @unique
 }

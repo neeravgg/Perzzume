@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes';
 import { sendError, sendResponse } from '../handlers/response.handler';
-import { createJWT } from '../helpers/token.helper';
+import { generateAccessToken, generateRefreshToken, isTokenValid, tokenDbCheck } from '../helpers/token.helper';
 import { ErrorHelper } from "../helpers/error.helper"
 import { prisma } from "../../server"
 import { loginValidate, registerValidate } from "../validators/auth.validation"
@@ -38,20 +38,22 @@ const adminLogin: controller_interface['basicController'] = async (req, res) => 
                 where: { user_id: user.id }
             });
         }
-        const token = createJWT({
-            email: user.email,
-            userId: user.id,
-        });
+        const accessToken = generateAccessToken(
+            user.id
+        );
+        const refreshToken = generateRefreshToken(
+            user.id
+        );
 
-        const userToken = { token, ip: req.ip ?? 'Unknown', user_agent: req.headers['user-agent'] ?? 'Unknown', valid_status: true, user_id: user.id };
+        const userToken = { refresh_token: refreshToken, ip: req.ip ?? 'Unknown', user_agent: req.headers['user-agent'] ?? 'Unknown', valid_status: true, user_id: user.id };
         await prisma.token.create({ data: userToken });
 
 
         const result = {
-            accessToken: token,
-            userId: user.id,
+            accessToken,
+            user_id: user.id,
         }
-        sendResponse(res, StatusCodes.OK, 'successfully loggedIn', true, result);
+        sendResponse(res, StatusCodes.OK, 'successfully loggedIn', true, result, { name: 'refesh_token', value: refreshToken });
     } catch (error: any) {
         sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, error.message, false, error);
     }
@@ -88,4 +90,33 @@ const adminRegister: controller_interface['basicController'] = async (req, res) 
     }
 };
 
-export { adminLogin, adminRegister };
+const refreshToken: controller_interface['basicController'] = async (req, res) => {
+    try {
+
+        const refreshToken = req.cookies.refresh_token;
+
+        if (!refreshToken) {
+            throw new ErrorHelper('Invalid Credentials', StatusCodes.UNAUTHORIZED);
+        }
+
+        const { existingToken } = await tokenDbCheck(refreshToken)
+
+        const newAccessToken = generateAccessToken(existingToken.id);
+        const newRefreshToken = generateRefreshToken(existingToken.id);
+
+        await prisma.token.update({
+            where: { user_id: existingToken.id },
+            data: {
+                refresh_token: newRefreshToken
+            },
+        });
+
+        sendResponse(res, StatusCodes.CREATED, 'Token refreshed', true, { accessToken: newAccessToken }, { name: 'refesh_token', value: newRefreshToken });
+    } catch (error) {
+        sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, (error as Error).message, false, error);
+    }
+
+    //if everything is ok, create new access token, refresh token and send to user
+}
+
+export { adminLogin, adminRegister, refreshToken };

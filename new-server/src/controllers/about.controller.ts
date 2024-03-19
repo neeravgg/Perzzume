@@ -3,12 +3,13 @@ import { ErrorHelper } from '../helpers/error.helper';
 import { sendError, sendResponse } from '../handlers/response.handler';
 import { controller_interface } from '../types/controller.interface';
 import { prisma } from "../../server"
+import { About } from '@prisma/client';
 
 const getAboutDetail: controller_interface['basicController'] = async (req, res) => {
     try {
-        const { user } = req.body;
-        const data = await prisma.about.findOne({
-            where: { user: user },
+        const { user_id } = res.locals.user;
+        const data = await prisma.about.findUnique({
+            where: { user_id: user_id },
         });
         sendResponse(res, StatusCodes.OK, 'Success!', true, data);
     } catch (error: any) {
@@ -18,22 +19,23 @@ const getAboutDetail: controller_interface['basicController'] = async (req, res)
 
 const addAboutDetail: controller_interface['basicController'] = async (req, res) => {
     try {
-        const { description, title, user } = req.body;
+        const { description, title, user_id, name }: About = req.body;
         const aboutExist = await prisma.about.findUnique({
-            where: { user: user },
+            where: { user_id: user_id },
         });
         if (aboutExist) {
             throw new ErrorHelper('About already exists');
         }
-
+        const createData = {
+            name,
+            description,
+            title,
+            user_id,
+        }
         await prisma.about.create({
-            data: {
-                description,
-                title,
-                user: user,
-            },
+            data: createData,
         });
-        sendResponse(res, StatusCodes.OK, 'Success!', true, {});
+        sendResponse(res, StatusCodes.OK, 'Success!', true, createData);
     } catch (error: any) {
         sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, error.message, false, error);
     }
@@ -41,19 +43,20 @@ const addAboutDetail: controller_interface['basicController'] = async (req, res)
 
 const updateAboutDetail: controller_interface['basicController'] = async (req, res) => {
     try {
-        const { description, title, user } = req.body;
+        const { description, title, user_id, name }: About = req.body;
         const aboutExist = await prisma.about.findUnique({
-            where: { user: user },
+            where: { user_id: user_id },
         });
         if (!aboutExist) {
             throw new ErrorHelper('About does not exist');
         }
 
         await prisma.about.update({
-            where: { user: user },
+            where: { user_id: user_id },
             data: {
                 description: description,
                 title: title,
+                name: name,
             },
         });
 

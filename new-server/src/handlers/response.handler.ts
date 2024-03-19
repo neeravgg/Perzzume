@@ -1,56 +1,69 @@
 import { ServerResponse } from 'http';
-
+import express from 'express'
 interface ApiResponse {
-  status: number;
   message: string;
   success: boolean;
 }
 
 interface SuccessApiResponse<T> extends ApiResponse {
-  result: T;
-  pagination?: any; // Replace 'any' with the actual type for pagination if needed
+  result?: T;
 }
 
-interface ErrorApiResponse extends ApiResponse {
-  error: any; // Replace 'any' with the actual type for error if needed
+interface ErrorApiResponse<T> extends ApiResponse {
+  error: T;
 }
 
 const sendResponse = async <T>(
-  res: ServerResponse,
+  res: express.Response,
   statusCode: number,
   message: string,
   success: boolean,
   result?: T,
-  pagination?: any
+  cookie?: { name: string; value: string; options?: any }
 ) => {
-  res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+  // Set status code automatically (optional)
+  res.status(statusCode);
+
+  // Set cookies
+  if (cookie) {
+    res.cookie(cookie.name, cookie.value, cookie.options || {
+      httpOnly: true, //accessible only by web server 
+      // secure: true, //https
+      sameSite: 'None', //cross-site cookie 
+      maxAge: 7 * 24 * 60 * 60 * 1000 //cookie expiry: set to match rT
+    });
+  }
+  // Define response body with generic type
   const responseBody: SuccessApiResponse<T> = {
-    status: statusCode,
     message,
     success,
-    result: result as T,
-    pagination,
+    result,
   };
-  res.write(JSON.stringify(responseBody));
-  res.end();
+
+  // Send JSON response
+  res.json(responseBody);
 };
 
-const sendError = async (
-  res: ServerResponse,
+
+const sendError = async <T>(
+  res: express.Response,
   statusCode: number,
   message: string,
   success: boolean,
-  error: any
+  error: T
 ) => {
-  res.writeHead(statusCode, { 'Content-Type': 'application/json' });
-  const responseBody: ErrorApiResponse = {
-    status: statusCode,
+  // Set status code automatically (optional)
+  res.status(statusCode);
+
+  // Define response body with generic type
+  const responseBody: ErrorApiResponse<T> = {
     message,
     success,
     error,
+
   };
-  res.write(JSON.stringify(responseBody));
-  res.end();
+  // Send JSON response
+  res.json(responseBody);
 };
 
 export { sendResponse, sendError };
