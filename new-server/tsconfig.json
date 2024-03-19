@@ -19,6 +19,35 @@
         "esModuleInterop": true, /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */
         "forceConsistentCasingInFileNames": true, /* Ensure that casing is correct in imports. */
         /* Type Checking */
+        "paths": {
+            "@controllers*": [
+                "./src/controllers*"
+            ],
+            "@handlers": [
+                "./src/handlers"
+            ],
+            "@helpers": [
+                "./src/helpers"
+            ],
+            "@middleware": [
+                "./src/middlewares"
+            ],
+            "@prisma": [
+                "./src/prisma"
+            ],
+            "@routes": [
+                "./src/routes"
+            ],
+            "@services": [
+                "./src/services"
+            ],
+            "@types": [
+                "./src/types"
+            ],
+            "@validators": [
+                "./src/validators"
+            ],
+        },
         "strict": true, /* Enable all strict type-checking options. */
     },
     "include": [

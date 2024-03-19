@@ -10,12 +10,13 @@ datasource db {
 model User {
   id         Int         @id @default(autoincrement())
   password   String
-  email      String
+  email      String      @unique
   Experience Experience?
   Project    Project?
   About      About?
   Skill      Skill?
   Token      Token?
+  Contact    Contact?
 }
 
 model About {
@@ -32,6 +33,8 @@ model Contact {
   name    String
   email   String
   message String
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id Int    @unique
 }
 
 model Experience {
@@ -61,11 +64,11 @@ model Skill {
 }
 
 model Token {
-  id        Int     @id @default(autoincrement())
-  token     String
-  ip        String
-  userAgent String
-  isValid   Boolean
-  user      User    @relation(fields: [user_id], references: [id])
-  user_id   Int     @unique
+  id           Int     @id @default(autoincrement())
+  token        String
+  ip           String
+  user_agent   String
+  valid_status Boolean @default(true)
+  user         User    @relation(fields: [user_id], references: [id])
+  user_id      Int     @unique
 }

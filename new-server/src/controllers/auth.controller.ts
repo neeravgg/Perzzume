@@ -5,6 +5,9 @@ import { ErrorHelper } from "../helpers/error.helper"
 import { prisma } from "../../server"
 import { loginValidate, registerValidate } from "../validators/auth.validation"
 import { controller_interface } from '../types/controller.interface'
+import { modal_interface } from '../types/modal.interface'
+import brcrypt from 'bcrypt'
+import { Token, User } from '@prisma/client';
 
 const adminLogin: controller_interface['basicController'] = async (req, res) => {
     try {
@@ -13,38 +16,40 @@ const adminLogin: controller_interface['basicController'] = async (req, res) => 
             throw new ErrorHelper(error.message);
         }
 
-        const { email, password } = req.body;
+        const { email, password }: User = req.body;
 
-        const user = await prisma.User.findOne({ email: new RegExp(`^${email}$`, 'i') });
+        const user: User | null = await prisma.user.findUnique({
+            where: { email },
+        });
 
         if (!user) {
             throw new ErrorHelper('Invalid Credentials', StatusCodes.UNAUTHORIZED);
         }
+        const isPasswordCorrect = await brcrypt.compare(password, user.password);
 
-        const isPasswordCorrect = user.password === password;
 
         if (!isPasswordCorrect) {
             throw new ErrorHelper('Invalid Credentials', StatusCodes.UNAUTHORIZED);
         }
-
-        const existingToken = await prisma.Token.findOne({ user: user._id });
+        const existingToken: Token | null = await prisma.token.findUnique({ where: { user_id: user.id } });
 
         if (existingToken) {
-            await prisma.Token.findOneAndDelete({ user: user._id });
+            await prisma.token.delete({
+                where: { user_id: user.id }
+            });
         }
-
         const token = createJWT({
             email: user.email,
             userId: user.id,
         });
-        const userAgent = req.headers['user-agent'];
-        const ip = req.ip;
-        const userToken = { token, ip, userAgent, user: user._id };
 
-        await prisma.Token.create(userToken);
+        const userToken = { token, ip: req.ip ?? 'Unknown', user_agent: req.headers['user-agent'] ?? 'Unknown', valid_status: true, user_id: user.id };
+        await prisma.token.create({ data: userToken });
+
+
         const result = {
             accessToken: token,
-            userId: user._id,
+            userId: user.id,
         }
         sendResponse(res, StatusCodes.OK, 'successfully loggedIn', true, result);
     } catch (error: any) {
@@ -59,10 +64,10 @@ const adminRegister: controller_interface['basicController'] = async (req, res) 
             throw new ErrorHelper(error.message);
         }
 
-        const { email, password } = req.body;
+        const { email, password }: User = req.body;
 
-        const emailAlreadyExists = await prisma.User.findOne({
-            email: new RegExp(`^${email}$`, 'i'),
+        const emailAlreadyExists: User | null = await prisma.user.findUnique({
+            where: { email },
         });
 
         if (emailAlreadyExists) {
@@ -72,12 +77,11 @@ const adminRegister: controller_interface['basicController'] = async (req, res) 
         let createObj = {
             email,
             password,
-            // Add your userType logic here if needed
         };
 
-        await prisma.User.create(createObj);
+        await prisma.user.create({ data: createObj });
 
-        sendResponse(res, StatusCodes.CREATED, 'successfully! registered', true, {});
+        sendResponse(res, StatusCodes.CREATED, 'successfully! registered', true, { email });
     } catch (error: any) {
         sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, error.message, false, error);
 
