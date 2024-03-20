@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int         @id @default(autoincrement())
+  password         String
+  email            String      @unique
+  created_at       DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime    @updatedAt @db.Timestamptz(6)
+  contact_count    Int         @default(0)
+  experience_count Int         @default(0)
+  project_count    Int         @default(0)
+  skill_count      Int         @default(0)
+  Experience       Experience?
+  Project          Project?
+  About            About?
+  Skill            Skill?
+  Token            Token?
+  Contact          Contact?
+}
+
+model About {
+  id          Int      @id @default(autoincrement())
+  name        String
+  title       String
+  description String
+  user        User     @relation(fields: [user_id], references: [id])
+  user_id     Int      @unique
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @updatedAt @db.Timestamptz(6)
+}
+
+model Contact {
+  id         Int      @id @default(autoincrement())
+  name       String
+  email      String
+  message    String
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    Int      @unique
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+}
+
+model Experience {
+  id          Int      @id @default(autoincrement())
+  company     String
+  job_title   String
+  description String
+  user        User     @relation(fields: [user_id], references: [id])
+  user_id     Int      @unique
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @updatedAt @db.Timestamptz(6)
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  title       String
+  code_link   String
+  demo_link   String
+  description String
+  user        User     @relation(fields: [user_id], references: [id])
+  user_id     Int      @unique
+  created_at  DateTime @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime @updatedAt @db.Timestamptz(6)
+}
+
+model Skill {
+  id         Int      @id @default(autoincrement())
+  title      String
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    Int      @unique
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @db.Timestamptz(6)
+}
+
+model Token {
+  id            Int      @id @default(autoincrement())
+  refresh_token String
+  ip            String
+  user_agent    String
+  valid_status  Boolean  @default(true)
+  user          User     @relation(fields: [user_id], references: [id])
+  user_id       Int      @unique
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @updatedAt @db.Timestamptz(6)
+}

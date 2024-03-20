@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "contact_count" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "experience_count" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "project_count" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "skill_count" INTEGER NOT NULL DEFAULT 0;
