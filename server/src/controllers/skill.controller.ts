@@ -32,7 +32,7 @@ const getSkillList: controller_interface['basicController'] = async (req, res) =
 const addSkill: controller_interface['basicController'] = async (req, res) => {
     try {
         const { user } = res.locals
-        const { title }: Skill = req.body;
+        const { title, image_name, image_url }: Skill = req.body;
 
         const existingSkillCount = await prisma.skill.count({
             where: {
@@ -45,6 +45,8 @@ const addSkill: controller_interface['basicController'] = async (req, res) => {
         }
         const createData = {
             title,
+            image_name,
+            image_url,
             user_id: user.id,
         }
         await prisma.skill.create({

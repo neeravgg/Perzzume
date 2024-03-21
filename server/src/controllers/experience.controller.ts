@@ -8,7 +8,7 @@ import { prisma } from '../../server';
 const addExperience: controller_interface['basicController'] = async (req, res) => {
     try {
         const { user } = res.locals
-        const { company, job_title, description }: Experience = req.body;
+        const { company, job_title, description, image_name, image_url }: Experience = req.body;
 
         const existingExperienceCount = await prisma.experience.count({
             where: {
@@ -23,6 +23,8 @@ const addExperience: controller_interface['basicController'] = async (req, res) 
             company,
             job_title,
             description,
+            image_name,
+            image_url,
             user_id: user.id,
         }
         await prisma.experience.create({

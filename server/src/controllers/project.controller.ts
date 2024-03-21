@@ -8,7 +8,7 @@ import { prisma } from '../../server';
 const addProject: controller_interface['basicController'] = async (req, res) => {
     try {
         const { user } = res.locals
-        const { title, code_link, demo_link, description }: Project = req.body;
+        const { title, code_link, demo_link, description, image_name, image_url }: Project = req.body;
 
         const existingProjectCount = await prisma.project.count({
             where: {
@@ -24,6 +24,8 @@ const addProject: controller_interface['basicController'] = async (req, res) => 
             code_link,
             demo_link,
             description,
+            image_name,
+            image_url,
             user_id: user.id,
         }
         await prisma.project.create({

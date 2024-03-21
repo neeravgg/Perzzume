@@ -8,12 +8,18 @@ import {
     deleteProject
 } from '../controllers/project.controller';
 import { authenticateUser } from '../middlewares/authentication.middleware';
+import { deleteImage, uploadImage, uploadMulter } from "../middlewares/image.upload.middleware";
 
 
 router.get('/get_list/:user_id', getProjectList);
-router.post('/add', authenticateUser, addProject);
-router.put('/update', authenticateUser, updateProject);
-router.delete('/delete/:id', authenticateUser, deleteProject);
+
+router.post('/add', authenticateUser, uploadMulter.single('image'),
+    uploadImage, addProject);
+
+router.put('/update', authenticateUser, uploadMulter.single('image'),
+    uploadImage, updateProject);
+
+router.delete('/delete/:id', authenticateUser, deleteImage, deleteProject);
 
 
 export default router;

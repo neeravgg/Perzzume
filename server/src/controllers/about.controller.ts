@@ -23,7 +23,7 @@ const getAboutDetail: controller_interface['basicController'] = async (req, res)
 const addAboutDetail: controller_interface['basicController'] = async (req, res) => {
     try {
         const { user } = res.locals
-        const { description, title, name }: About = req.body;
+        const { description, title, name, image_name, image_url }: About = req.body;
         const aboutExist = await prisma.about.findUnique({
             where: { user_id: user.id },
         });
@@ -34,6 +34,8 @@ const addAboutDetail: controller_interface['basicController'] = async (req, res)
             name,
             description,
             title,
+            image_name,
+            image_url,
             user_id: user.id,
         }
         await prisma.about.create({

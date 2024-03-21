@@ -1,54 +1,43 @@
-// const multer = require('multer');
-// const { GridFsStorage } = require('multer-gridfs-storage');
-// const Image = require('../Models/imageModels');
-// const crypto = require('crypto');
-// const path = require('path');
+import multer from 'multer'
+import sharp from 'sharp'
+import { middlewareInterface } from '../types/middleware.interface';
+import { generateFileName } from '../helpers/upload.helper';
+import { uploadFile, deleteFile, getObjectSignedUrl } from '../services/awsS3'
 
-// // Create a function that returns the middleware
-// function imageUploadMiddleware(req, res, next) {
-//     // Set up Multer for file storage
-//     const storage = new GridFsStorage({
-//         url: process.env.MONGO_URL,
-//         file: (req, file) => {
-//             return new Promise((resolve, reject) => {
-//                 crypto.randomBytes(16, (err, buf) => {
-//                     if (err) {
-//                         return reject(err);
-//                     }
-//                     const filename = buf.toString('hex') + file.originalname;
-//                     const fileInfo = {
-//                         filename: filename,
-//                         bucketName: 'uploads',
-//                     };
-//                     resolve(fileInfo);
-//                 });
-//             });
-//         },
-//     });
+//  multer
+const storage = multer.memoryStorage()
+const uploadMulter = multer({ storage: storage });
 
-//     const upload = multer({ storage: storage });
+// add image
+const uploadImage: middlewareInterface['uploadImage'] = async (resizeOptions, req, res, next) => {
+    const file = req.file
+    if (file) {
+        const imageName: string = req.body.image_name || generateFileName()
 
-//     upload.single('image')(req, res, async (err) => {
-//         if (err) {
-//             return res.status(400).json({ error: err.message });
-//         }
+        const fileBuffer = await sharp(file.buffer)
+            .resize(resizeOptions)
+            .toBuffer()
 
-//         try {
-//             if (!req.file) {
-//                 throw new Error('No file uploaded');
-//             }
+        await uploadFile(fileBuffer, imageName, file.mimetype)
 
-//             const { filename, path } = req.file;
-//             const image = new Image({ filename, path });
-//             await image.save();
+        if (!req.body.image_name) {
+            const image_url = getObjectSignedUrl(imageName)
+            req.body.image_name = imageName
+            req.body.image_url = image_url
+        }
+    }
+    next()
 
-//             req.uploadedImageId = image._id; // Attach the image ID to the request object
+}
 
-//             next();
-//         } catch (error) {
-//             return res.status(500).json({ error: error.message });
-//         }
-//     });
-// }
+const deleteImage: middlewareInterface['deleteImage'] = async (req, res, next) => {
 
-// module.exports = imageUploadMiddleware;
+    const imageName: string = req.body.image_name
+
+    await deleteFile(imageName)
+
+    next()
+
+}
+
+export { uploadMulter, uploadImage, deleteImage }

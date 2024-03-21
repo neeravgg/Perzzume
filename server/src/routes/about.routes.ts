@@ -6,6 +6,11 @@ import {
 	authenticateUser,
 } from '../middlewares/authentication.middleware';
 import {
+	uploadImage,
+	uploadMulter
+} from '../middlewares/image.upload.middleware';
+
+import {
 	getAboutDetail,
 	addAboutDetail,
 	updateAboutDetail
@@ -18,13 +23,16 @@ router.get('/get_detail/:user_id', getAboutDetail);
 router.post(
 	'/add',
 	authenticateUser,
-	// imageUploadMiddleware,
+	uploadMulter.single('image'),
+	uploadImage,
 	addAboutDetail
 );
 // PUT
 router.put(
 	'/update',
 	authenticateUser,
+	uploadMulter.single('image'),
+	uploadImage,
 	updateAboutDetail
 );
 
