@@ -3,37 +3,56 @@ import { modal_interface } from "../types/modal.interface";
 import { StatusCodes } from "http-status-codes";
 import { ErrorHelper } from "./error.helper";
 import { prisma } from "../../server";
+import jwt, { JwtPayload } from 'jsonwebtoken'
 
-const jwt = require('jsonwebtoken')
 
+type EnvironmentVariables = {
+    JWT_SECRET: string;
+    ACCESS_TOKEN_SECRET: string;
+    REFRESH_TOKEN_SECRET: string;
+};
 
-const isTokenValid = async (token: string): Promise<modal_interface['user'] | false> => {
-    try {
-        const decoded = await jwt.verify(token, process.env.JWT_SECRET as string);
-        return decoded;
-    } catch (err) {
-        return false;
+const {
+    ACCESS_TOKEN_SECRET,
+    REFRESH_TOKEN_SECRET }: EnvironmentVariables = process.env as EnvironmentVariables;
+
+const isTokenValid = async (token: string, type: string): Promise<JwtPayload | string | false> => {
+
+    if (type === 'access_jwt') {
+        return jwt.verify(token, ACCESS_TOKEN_SECRET);
     }
+    else if (type === 'refresh_jwt') {
+        return jwt.verify(token, REFRESH_TOKEN_SECRET);
+    }
+    return false
+
 };
 
 const generateAccessToken = (user_id: number) => {
-    return jwt.sign({ id: user_id }, process.env.ACCESS_TOKEN_SECRET, {
+    return jwt.sign({ id: user_id }, ACCESS_TOKEN_SECRET, {
         expiresIn: "5s",
     });
 };
 
 const generateRefreshToken = (user_id: number) => {
-    return jwt.sign({ id: user_id }, process.env.REFRESH_TOKEN_SECRET, {
+    return jwt.sign({ id: user_id }, REFRESH_TOKEN_SECRET, {
         expiresIn: "7d",
     });
 };
 
-const tokenDbCheck = async (token: string) => {
-    const decoded = await isTokenValid(token);
-    if (decoded === false) {
+const tokenDbCheck = async (token: string, type: string) => {
+    const decoded = await isTokenValid(token, type);
+
+    if (decoded === false || typeof decoded === 'string' || !decoded.id) {
         throw new ErrorHelper('Invalid Token', StatusCodes.UNAUTHORIZED);
     }
-    const existingToken = await prisma.token.findUnique({ where: { user_id: decoded.id, valid_status: true } })
+    const id: number = decoded.id as number
+    const existingToken = await prisma.token.findUnique({
+        where: {
+
+            user_id: id,
+        }
+    });
     if (!existingToken) {
         throw new ErrorHelper('Invalid Credentials', StatusCodes.UNAUTHORIZED);
     }

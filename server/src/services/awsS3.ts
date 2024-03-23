@@ -1,7 +1,6 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-// Define custom type for environment variables
 type EnvironmentVariables = {
     AWS_BUCKET_NAME: string;
     AWS_BUCKET_REGION: string;
@@ -9,7 +8,6 @@ type EnvironmentVariables = {
     AWS_SECRET_ACCESS_KEY: string;
 };
 
-// Retrieve environment variables
 const { AWS_BUCKET_NAME, AWS_BUCKET_REGION, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY }: EnvironmentVariables = process.env as EnvironmentVariables;
 
 const bucketName: string = AWS_BUCKET_NAME;

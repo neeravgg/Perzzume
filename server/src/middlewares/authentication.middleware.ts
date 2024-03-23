@@ -15,7 +15,7 @@ const authenticateUser: middlewareInterface['authenticate'] = async (req, res, n
         const bearerToken = accessToken.split(' ')[1];
 
 
-        const { decoded, existingToken } = await tokenDbCheck(bearerToken)
+        const { decoded, existingToken } = await tokenDbCheck(bearerToken, 'access_jwt')
 
         res.locals.user = decoded;
         return next();

@@ -1,6 +1,7 @@
 import express from "express"
 import path from "path";
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 
 import aboutRoutes from './routes/about.routes'
 import authRoutes from './routes/auth.routes'
@@ -15,6 +16,8 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors());
+app.use(cookieParser());
+
 // routes
 app.use('/auth', authRoutes);
 app.use('/about', aboutRoutes);

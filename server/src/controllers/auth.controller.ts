@@ -1,11 +1,10 @@
 import { StatusCodes } from 'http-status-codes';
 import { sendError, sendResponse } from '../handlers/response.handler';
-import { generateAccessToken, generateRefreshToken, isTokenValid, tokenDbCheck } from '../helpers/token.helper';
+import { generateAccessToken, generateRefreshToken, tokenDbCheck } from '../helpers/token.helper';
 import { ErrorHelper } from "../helpers/error.helper"
 import { prisma } from "../../server"
 import { loginValidate, registerValidate } from "../validators/auth.validation"
 import { controller_interface } from '../types/controller.interface'
-import { modal_interface } from '../types/modal.interface'
 import brcrypt from 'bcrypt'
 import { Token, User } from '@prisma/client';
 
@@ -26,7 +25,6 @@ const adminLogin: controller_interface['basicController'] = async (req, res) => 
             throw new ErrorHelper('Invalid Credentials', StatusCodes.UNAUTHORIZED);
         }
         const isPasswordCorrect = await brcrypt.compare(password, user.password);
-
 
         if (!isPasswordCorrect) {
             throw new ErrorHelper('Invalid Credentials', StatusCodes.UNAUTHORIZED);
@@ -53,7 +51,7 @@ const adminLogin: controller_interface['basicController'] = async (req, res) => 
             accessToken,
             user_id: user.id,
         }
-        sendResponse(res, StatusCodes.OK, 'successfully loggedIn', true, result, { name: 'refesh_token', value: refreshToken });
+        sendResponse(res, StatusCodes.OK, 'successfully loggedIn', true, result, { name: 'refresh_token', value: refreshToken });
     } catch (error: any) {
         sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, error.message, false, error);
     }
@@ -75,10 +73,12 @@ const adminRegister: controller_interface['basicController'] = async (req, res) 
         if (emailAlreadyExists) {
             throw new ErrorHelper('This email is already registered!', StatusCodes.UNAUTHORIZED);
         }
-
+        // Hash password
+        const salt = await brcrypt.genSalt(10);
+        const hashedPassword = await brcrypt.hash(password, salt);
         let createObj = {
             email,
-            password,
+            password: hashedPassword,
         };
 
         await prisma.user.create({ data: createObj });
@@ -93,29 +93,44 @@ const adminRegister: controller_interface['basicController'] = async (req, res) 
 const refreshToken: controller_interface['basicController'] = async (req, res) => {
     try {
 
-        const refreshToken = req.cookies.refresh_token;
+        const refreshToken = req.cookies['refresh_token'];
 
         if (!refreshToken) {
             throw new ErrorHelper('Invalid Credentials', StatusCodes.UNAUTHORIZED);
         }
 
-        const { existingToken } = await tokenDbCheck(refreshToken)
+        const { existingToken } = await tokenDbCheck(refreshToken, 'refresh_jwt')
 
         const newAccessToken = generateAccessToken(existingToken.id);
         const newRefreshToken = generateRefreshToken(existingToken.id);
 
         await prisma.token.update({
-            where: { user_id: existingToken.id },
+            where: { user_id: existingToken.user_id },
             data: {
                 refresh_token: newRefreshToken
             },
         });
 
-        sendResponse(res, StatusCodes.CREATED, 'Token refreshed', true, { accessToken: newAccessToken }, { name: 'refesh_token', value: newRefreshToken });
+        sendResponse(res, StatusCodes.CREATED, 'Token refreshed', true, { accessToken: newAccessToken }, { name: 'refresh_token', value: newRefreshToken });
     } catch (error: any) {
         sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, error.message, false, error);
     }
 
 }
 
-export { adminLogin, adminRegister, refreshToken };
+const logout: controller_interface['basicController'] = async (req, res) => {
+    try {
+        const { user } = res.locals
+
+        await prisma.token.delete({
+            where: { id: user.id },
+        })
+
+        sendResponse(res, StatusCodes.CREATED, 'successfully! registered', true, {});
+    } catch (error: any) {
+        sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, error.message, false, error);
+
+    }
+};
+
+export { adminLogin, adminRegister, logout, refreshToken };
