@@ -123,10 +123,10 @@ const logout: controller_interface['basicController'] = async (req, res) => {
         const { user } = res.locals
 
         await prisma.token.delete({
-            where: { id: user.id },
+            where: { user_id: user.id },
         })
 
-        sendResponse(res, StatusCodes.CREATED, 'successfully! registered', true, {});
+        sendResponse(res, StatusCodes.CREATED, 'Logged out!', true, {});
     } catch (error: any) {
         sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, error.message, false, error);
 

@@ -4,11 +4,13 @@ import { StatusCodes } from 'http-status-codes';
 import { controller_interface } from '../types/controller.interface';
 import { Experience } from '@prisma/client';
 import { prisma } from '../../server';
+import { middlewareInterface } from '../types/middleware.interface';
 
 const addExperience: controller_interface['basicController'] = async (req, res) => {
     try {
-        const { user } = res.locals
-        const { company, job_title, description, image_name, image_url }: Experience = req.body;
+        const user: middlewareInterface['decoded_user'] = res.locals.user
+        const { image_name, image_url } = res.locals
+        const { company, job_title, description }: Experience = req.body;
 
         const existingExperienceCount = await prisma.experience.count({
             where: {
@@ -68,7 +70,7 @@ const getExperienceList: controller_interface['basicController'] = async (req, r
 
 const updateExperience: controller_interface['basicController'] = async (req, res) => {
     try {
-        const { user } = res.locals
+        const user: middlewareInterface['decoded_user'] = res.locals.user
         const { company, job_title, description, id }: Experience = req.body;
 
         const data = await prisma.experience.update({

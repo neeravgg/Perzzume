@@ -10,20 +10,21 @@ import {
 
 import { authenticateUser } from '../middlewares/authentication.middleware';
 import { deleteImage, uploadImage, uploadMulter } from "../middlewares/image.upload.middleware";
+import wrapper from "../middlewares/wrapper.middleware";
 
 router.post('/get_list/:user_id', getExperienceList);
 router.post(
 	'/add',
 	authenticateUser,
 	uploadMulter.single('image'),
-	uploadImage,
+	wrapper(uploadImage, { height: 520, width: 520 }),
 	addExperience
 );
 router.put(
 	'/update',
 	authenticateUser,
 	uploadMulter.single('image'),
-	uploadImage,
+	wrapper(uploadImage, { height: 520, width: 520 }, true),
 	updateExperience
 );
 router.delete(

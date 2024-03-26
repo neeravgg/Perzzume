@@ -6,9 +6,10 @@ import {
     deleteContact, getContactList
 } from '../controllers/contact.controller';
 import { authenticateUser } from '../middlewares/authentication.middleware';
+import { uploadMulter } from "../middlewares/image.upload.middleware";
 
-router.post('/send', addContact);
-router.post('/get_list', authenticateUser, getContactList);
+router.post('/send', uploadMulter.none(), addContact);
+router.post('/get_list', uploadMulter.none(), authenticateUser, getContactList);
 router.delete('/delete/:id', authenticateUser, deleteContact);
 
 

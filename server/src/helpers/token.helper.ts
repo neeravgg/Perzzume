@@ -30,7 +30,7 @@ const isTokenValid = async (token: string, type: string): Promise<JwtPayload | s
 
 const generateAccessToken = (user_id: number) => {
     return jwt.sign({ id: user_id }, ACCESS_TOKEN_SECRET, {
-        expiresIn: "5s",
+        expiresIn: "1d",
     });
 };
 

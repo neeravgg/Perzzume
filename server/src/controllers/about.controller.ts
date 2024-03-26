@@ -5,6 +5,7 @@ import { controller_interface } from '../types/controller.interface';
 import { prisma } from "../../server"
 import { About } from '@prisma/client';
 import { modal_interface } from '../types/modal.interface';
+import { middlewareInterface } from '../types/middleware.interface';
 
 const getAboutDetail: controller_interface['basicController'] = async (req, res) => {
     try {
@@ -22,11 +23,14 @@ const getAboutDetail: controller_interface['basicController'] = async (req, res)
 
 const addAboutDetail: controller_interface['basicController'] = async (req, res) => {
     try {
-        const { user } = res.locals
-        const { description, title, name, image_name, image_url }: About = req.body;
+        const user: middlewareInterface['decoded_user'] = res.locals.user
+        const { image_name, image_url } = res.locals
+        const { description, title, name }: About = req.body;
+
         const aboutExist = await prisma.about.findUnique({
             where: { user_id: user.id },
         });
+
         if (aboutExist) {
             throw new ErrorHelper('About already exists');
         }
@@ -34,8 +38,8 @@ const addAboutDetail: controller_interface['basicController'] = async (req, res)
             name,
             description,
             title,
-            image_name,
-            image_url,
+            image_name: image_name ?? null,
+            image_url: image_url ?? null,
             user_id: user.id,
         }
         await prisma.about.create({
@@ -49,7 +53,7 @@ const addAboutDetail: controller_interface['basicController'] = async (req, res)
 
 const updateAboutDetail: controller_interface['basicController'] = async (req, res) => {
     try {
-        const { user } = res.locals
+        const user: middlewareInterface['decoded_user'] = res.locals.user
         const { description, title, name }: About = req.body;
         const aboutExist = await prisma.about.findUnique({
             where: { user_id: user.id },

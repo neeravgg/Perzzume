@@ -5,15 +5,15 @@ type EnvironmentVariables = {
     AWS_BUCKET_NAME: string;
     AWS_BUCKET_REGION: string;
     AWS_ACCESS_KEY: string;
-    AWS_SECRET_ACCESS_KEY: string;
+    AWS_SECRECT_KEY: string;
 };
 
-const { AWS_BUCKET_NAME, AWS_BUCKET_REGION, AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY }: EnvironmentVariables = process.env as EnvironmentVariables;
+const { AWS_BUCKET_NAME, AWS_BUCKET_REGION, AWS_ACCESS_KEY, AWS_SECRECT_KEY }: EnvironmentVariables = process.env as EnvironmentVariables;
 
 const bucketName: string = AWS_BUCKET_NAME;
 const region: string = AWS_BUCKET_REGION;
 const accessKeyId: string = AWS_ACCESS_KEY;
-const secretAccessKey: string = AWS_SECRET_ACCESS_KEY;
+const secretAccessKey: string = AWS_SECRECT_KEY;
 
 const s3Client: S3Client = new S3Client({
     region,

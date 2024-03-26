@@ -4,12 +4,13 @@ import { StatusCodes } from 'http-status-codes';
 import { controller_interface } from '../types/controller.interface';
 import { Contact } from '@prisma/client';
 import { prisma } from '../../server';
+import { middlewareInterface } from '../types/middleware.interface';
 
 
 const addContact: controller_interface['basicController'] = async (req, res) => {
     try {
-        const { email, message, name, user_id }: Contact = req.body;
-
+        const { email, message, name, user_id } = req.body;
+        const userId = parseInt(user_id)
         const now = new Date();
         const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000); // Milliseconds in a day
 
@@ -24,20 +25,20 @@ const addContact: controller_interface['basicController'] = async (req, res) => 
         })
 
         if (existingContactCount >= 2) {
-            throw new ErrorHelper('Please retry after sometime.', StatusCodes.NOT_ACCEPTABLE);
+            throw new ErrorHelper('Already contacted!', StatusCodes.NOT_ACCEPTABLE);
         }
 
         const createData = {
             email,
             message,
             name,
-            user_id,
+            user_id: userId,
         }
         await prisma.contact.create({
             data: createData,
         });
         await prisma.user.update({
-            where: { id: user_id },
+            where: { id: userId },
             data: {
                 contact_count: { increment: 1 }
             }
@@ -50,12 +51,12 @@ const addContact: controller_interface['basicController'] = async (req, res) => 
 
 const deleteContact: controller_interface['basicController'] = async (req, res) => {
     try {
-        const { user } = res.locals
+        const user: middlewareInterface['decoded_user'] = res.locals.user
         const { id } = req.params
         const contact_id = parseInt(id)
 
         const data = await prisma.contact.delete({
-            where: { user_id: user.id, id: contact_id },
+            where: { id: contact_id },
         });
         if (!data) {
             throw new ErrorHelper('This can not be deleted!');
@@ -72,39 +73,21 @@ const deleteContact: controller_interface['basicController'] = async (req, res) 
     }
 };
 
-// const getContactDetail: controller_interface['basicController'] = async (req, res) => {
-//     try {
-//         const { user } = res.locals
-//         const { id } = req.params
-//         const contact_id = parseInt(id)
-
-//         const data = await prisma.contact.findUnique({
-//             where: { user_id: user.id, id: contact_id },
-//         });
-
-//         if (!data) {
-//             throw new ErrorHelper('This can not be fetched!');
-//         }
-
-//         sendResponse(res, StatusCodes.OK, 'Contact deleted.', true, data);
-//     } catch (error: any) {
-//         sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, error.message, false, error);
-//     }
-// };
-
 const getContactList: controller_interface['basicController'] = async (req, res) => {
     try {
         const { user } = res.locals;
         const { page = 1, pageSize = 10 } = req.body
+        const skip = (page - 1) * pageSize
+        const size = parseInt(pageSize)
 
         const data = await prisma.contact.findMany({
-            skip: page - 1 * pageSize,
-            take: pageSize,
+            skip: skip,
+            take: size,
             where: { user_id: user.id }
         });
 
         if (!data || data.length === 0) {
-            throw new ErrorHelper('No Contact found.');
+            throw new ErrorHelper('No Contact found.', StatusCodes.NO_CONTENT);
         }
 
         sendResponse(res, StatusCodes.OK, 'Contact List.', true, data);
