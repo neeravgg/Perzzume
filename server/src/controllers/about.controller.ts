@@ -5,14 +5,23 @@ import { controller_interface } from '../types/controller.interface';
 import { prisma } from "../../server"
 import { About } from '@prisma/client';
 import { modal_interface } from '../types/modal.interface';
-import { middlewareInterface } from '../types/middleware.interface';
+import { localsInterface } from '../types/locals.interface';
+import {
+    addValidate,
+    getListValidate,
+    updateValidate
+} from '../validators/about.validation'
 
 const getAboutDetail: controller_interface['basicController'] = async (req, res) => {
     try {
+        const { error } = getListValidate.validate(req.params);
+        if (error) {
+            throw new ErrorHelper(error.message);
+        }
         const { user_id } = req.params
-        const _id = parseInt(user_id)
+
         const data = await prisma.about.findUnique({
-            where: { user_id: _id },
+            where: { user_id: parseInt(user_id) },
         });
         sendResponse(res, StatusCodes.OK, 'Success!', true, data);
     } catch (error: any) {
@@ -23,7 +32,11 @@ const getAboutDetail: controller_interface['basicController'] = async (req, res)
 
 const addAboutDetail: controller_interface['basicController'] = async (req, res) => {
     try {
-        const user: middlewareInterface['decoded_user'] = res.locals.user
+        const { error } = addValidate.validate(req.body);
+        if (error) {
+            throw new ErrorHelper(error.message);
+        }
+        const user: localsInterface['decoded_user'] = res.locals.user
         const { image_name, image_url } = res.locals
         const { description, title, name }: About = req.body;
 
@@ -53,25 +66,30 @@ const addAboutDetail: controller_interface['basicController'] = async (req, res)
 
 const updateAboutDetail: controller_interface['basicController'] = async (req, res) => {
     try {
-        const user: middlewareInterface['decoded_user'] = res.locals.user
+        const { error } = updateValidate.validate(req.body);
+        if (error) {
+            throw new ErrorHelper(error.message);
+        }
+        const user: localsInterface['decoded_user'] = res.locals.user
         const { description, title, name }: About = req.body;
+
         const aboutExist = await prisma.about.findUnique({
             where: { user_id: user.id },
         });
         if (!aboutExist) {
             throw new ErrorHelper('About does not exist');
         }
-
-        await prisma.about.update({
+        const updateData = {
+            description: description,
+            title: title,
+            name: name,
+        }
+        const data = await prisma.about.update({
             where: { user_id: user.id },
-            data: {
-                description: description,
-                title: title,
-                name: name,
-            },
+            data: updateData,
         });
 
-        sendResponse(res, StatusCodes.OK, 'Success!', true, {});
+        sendResponse(res, StatusCodes.OK, 'Success!', true, data);
     } catch (error: any) {
         sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, error.message, false, error);
     }

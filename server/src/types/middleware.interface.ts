@@ -8,11 +8,6 @@ interface middlewareInterface {
     authenticationCheck: (req: Request, res: Response, next: NextFunction) => void;
     uploadImage: (resizeOptions: sharp.ResizeOptions, req: Request, res: Response, next: NextFunction, update?: boolean,) => void;
     deleteImage: (req: Request, res: Response, next: NextFunction) => void;
-    decoded_user: {
-        id: number,
-        iat: number,
-        export: number
-    }
 }
 
 

@@ -4,13 +4,19 @@ import { StatusCodes } from 'http-status-codes';
 import { controller_interface } from '../types/controller.interface';
 import { Experience } from '@prisma/client';
 import { prisma } from '../../server';
-import { middlewareInterface } from '../types/middleware.interface';
+import { localsInterface } from '../types/locals.interface';
+import { modal_interface } from '../types/modal.interface';
+import { addValidate, deleteValidate, getListValidate, updateValidate } from '../validators/experience.validation'
 
 const addExperience: controller_interface['basicController'] = async (req, res) => {
     try {
-        const user: middlewareInterface['decoded_user'] = res.locals.user
+        const { error } = addValidate.validate(req.body);
+        if (error) {
+            throw new ErrorHelper(error.message);
+        }
+        const user: localsInterface['decoded_user'] = res.locals.user
         const { image_name, image_url } = res.locals
-        const { company, job_title, description }: Experience = req.body;
+        const { company, job_title, description }: modal_interface['experience'] = req.body;
 
         const existingExperienceCount = await prisma.experience.count({
             where: {
@@ -38,7 +44,7 @@ const addExperience: controller_interface['basicController'] = async (req, res) 
                 experience_count: { increment: 1 }
             }
         })
-        sendResponse(res, StatusCodes.OK, 'Experience added', true, {});
+        sendResponse(res, StatusCodes.OK, 'Experience added', true, createData);
 
     } catch (error: any) {
         sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, error.message, false, error);
@@ -47,14 +53,19 @@ const addExperience: controller_interface['basicController'] = async (req, res) 
 
 const getExperienceList: controller_interface['basicController'] = async (req, res) => {
     try {
-        const { user_id } = req.params;
-        const _id = parseInt(user_id)
-        const { page = 1, pageSize = 10 } = req.body
+        const { error } = getListValidate.validate(req.body);
+        if (error) {
+            throw new ErrorHelper(error.message);
+        }
+
+        const { user_id, page = '1', pageSize = '10' } = req.body
+        const skip = (page - 1) * pageSize
+        const size = parseInt(pageSize)
 
         const data = await prisma.experience.findMany({
-            skip: page - 1 * pageSize,
-            take: pageSize,
-            where: { user_id: _id }
+            skip: skip,
+            take: size,
+            where: { user_id: parseInt(user_id) }
         });
 
         if (!data || data.length === 0) {
@@ -70,16 +81,19 @@ const getExperienceList: controller_interface['basicController'] = async (req, r
 
 const updateExperience: controller_interface['basicController'] = async (req, res) => {
     try {
-        const user: middlewareInterface['decoded_user'] = res.locals.user
-        const { company, job_title, description, id }: Experience = req.body;
-
+        const { error } = updateValidate.validate(req.body);
+        if (error) {
+            throw new ErrorHelper(error.message);
+        }
+        const { company, job_title, description, id }: modal_interface['experience'] = req.body;
+        const updateData = {
+            company: company,
+            job_title: job_title,
+            description: description,
+        }
         const data = await prisma.experience.update({
-            where: { user_id: user.id, id: id },
-            data: {
-                company: company,
-                job_title: job_title,
-                description: description,
-            }
+            where: { id: parseInt(id) },
+            data: updateData
         })
 
         sendResponse(res, StatusCodes.OK, 'Experience updated.', true, data);
@@ -91,12 +105,15 @@ const updateExperience: controller_interface['basicController'] = async (req, re
 
 const deleteExperience: controller_interface['basicController'] = async (req, res) => {
     try {
-        const { user } = res.locals
+        const { error } = deleteValidate.validate(req.params);
+        if (error) {
+            throw new ErrorHelper(error.message);
+        }
+        const user: localsInterface['decoded_user'] = res.locals.user
         const { id } = req.params
-        const experience_id = parseInt(id)
 
         const data = await prisma.experience.delete({
-            where: { user_id: user.id, id: experience_id },
+            where: { user_id: user.id, id: parseInt(id) },
         });
         if (!data) {
             throw new ErrorHelper('The experience can not be deleted!');

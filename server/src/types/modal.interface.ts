@@ -7,7 +7,7 @@ interface modal_interface {
     experience: Experience;
     contact: Contact;
     about: About;
-    user: User;
+    user?: User;
 }
 
 interface Token {
@@ -38,8 +38,8 @@ interface Project {
 }
 
 interface Experience {
-    id?: number;
-    user_id?: number;
+    id: string;
+    user_id?: string;
     company: string;
     job_title: string;
     description: string;
@@ -47,8 +47,8 @@ interface Experience {
 }
 
 interface Contact {
-    id?: number;
-    user_id?: number;
+    id?: string;
+    user_id: string;
     name: string;
     email: string;
     message: string;
@@ -56,8 +56,8 @@ interface Contact {
 }
 
 interface About {
-    id?: number;
-    user_id?: number;
+    id?: string;
+    user_id: string;
     name: string;
     title: string;
     description: string;

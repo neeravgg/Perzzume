@@ -12,7 +12,7 @@ import { authenticateUser } from '../middlewares/authentication.middleware';
 import { deleteImage, uploadImage, uploadMulter } from "../middlewares/image.upload.middleware";
 import wrapper from "../middlewares/wrapper.middleware";
 
-router.post('/get_list/:user_id', getExperienceList);
+router.post('/get_list', getExperienceList);
 router.post(
 	'/add',
 	authenticateUser,
