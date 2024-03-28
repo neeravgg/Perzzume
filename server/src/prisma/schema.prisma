@@ -36,6 +36,8 @@ model About {
   image_url   String
   created_at  DateTime @default(now()) @db.Timestamptz(6)
   updated_at  DateTime @updatedAt @db.Timestamptz(6)
+
+  @@unique(fields: [id, user_id], name: "users_data")
 }
 
 model Contact {
@@ -47,6 +49,8 @@ model Contact {
   user_id    Int
   created_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at DateTime @updatedAt @db.Timestamptz(6)
+
+  @@unique(fields: [id, user_id], name: "users_data")
 }
 
 model Experience {
@@ -60,6 +64,8 @@ model Experience {
   image_url   String
   created_at  DateTime @default(now()) @db.Timestamptz(6)
   updated_at  DateTime @updatedAt @db.Timestamptz(6)
+
+  @@unique(fields: [id, user_id], name: "users_data")
 }
 
 model Project {
@@ -74,6 +80,8 @@ model Project {
   image_url   String
   created_at  DateTime @default(now()) @db.Timestamptz(6)
   updated_at  DateTime @updatedAt @db.Timestamptz(6)
+
+  @@unique(fields: [id, user_id], name: "users_data")
 }
 
 model Skill {
@@ -85,6 +93,8 @@ model Skill {
   image_url  String
   created_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at DateTime @updatedAt @db.Timestamptz(6)
+
+  @@unique(fields: [id, user_id], name: "users_data")
 }
 
 model Token {
@@ -97,4 +107,6 @@ model Token {
   user_id       Int      @unique
   created_at    DateTime @default(now()) @db.Timestamptz(6)
   updated_at    DateTime @updatedAt @db.Timestamptz(6)
+
+  @@unique(fields: [id, user_id], name: "users_data")
 }

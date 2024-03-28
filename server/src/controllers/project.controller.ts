@@ -2,13 +2,20 @@ import { ErrorHelper } from '../helpers/error.helper';
 import { sendError, sendResponse } from '../handlers/response.handler';
 import { StatusCodes } from 'http-status-codes';
 import { controller_interface } from '../types/controller.interface';
-import { Project } from '@prisma/client';
 import { prisma } from '../../server';
+import { localsInterface } from '../types/locals.interface';
+import { addValidate, deleteValidate, getListValidate, updateValidate } from '../validators/project.validation'
+import { modal_interface } from '../types/modal.interface';
 
 const addProject: controller_interface['basicController'] = async (req, res) => {
     try {
-        const { user } = res.locals
-        const { title, code_link, demo_link, description, image_name, image_url }: Project = req.body;
+        const { error } = addValidate.validate(req.body);
+        if (error) {
+            throw new ErrorHelper(error.message);
+        }
+        const user: localsInterface['decoded_user'] = res.locals.user
+        const { image_name, image_url } = res.locals
+        const { title, code_link, demo_link, description }: modal_interface['project'] = req.body;
 
         const existingProjectCount = await prisma.project.count({
             where: {
@@ -28,7 +35,7 @@ const addProject: controller_interface['basicController'] = async (req, res) => 
             image_url,
             user_id: user.id,
         }
-        await prisma.project.create({
+        const data = await prisma.project.create({
             data: createData,
         });
         await prisma.user.update({
@@ -37,7 +44,7 @@ const addProject: controller_interface['basicController'] = async (req, res) => 
                 project_count: { increment: 1 }
             }
         })
-        sendResponse(res, StatusCodes.OK, 'Project added', true, {});
+        sendResponse(res, StatusCodes.OK, 'Project added', true, data);
 
     } catch (error: any) {
         sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, error.message, false, error);
@@ -46,14 +53,18 @@ const addProject: controller_interface['basicController'] = async (req, res) => 
 
 const getProjectList: controller_interface['basicController'] = async (req, res) => {
     try {
-        const { user_id } = req.params;
-        const _id = parseInt(user_id)
-        const { page = 1, pageSize = 10 } = req.body
+        const { error } = getListValidate.validate(req.body);
+        if (error) {
+            throw new ErrorHelper(error.message);
+        }
+        const { user_id, page = '1', pageSize = '10' } = req.body
+        const skip = (page - 1) * pageSize
+        const size = parseInt(pageSize)
 
         const data = await prisma.project.findMany({
-            skip: page - 1 * pageSize,
-            take: pageSize,
-            where: { user_id: _id }
+            skip: skip,
+            take: size,
+            where: { user_id: parseInt(user_id) }
         });
 
         if (!data || data.length === 0) {
@@ -69,11 +80,20 @@ const getProjectList: controller_interface['basicController'] = async (req, res)
 
 const updateProject: controller_interface['basicController'] = async (req, res) => {
     try {
+        const { error } = updateValidate.validate(req.body);
+        if (error) {
+            throw new ErrorHelper(error.message);
+        }
         const { user } = res.locals
-        const { title, code_link, demo_link, description, id }: Project = req.body;
+        const { title, code_link, demo_link, description, id }: modal_interface['project'] = req.body;
 
         const data = await prisma.project.update({
-            where: { user_id: user.id, id: id },
+            where: {
+                users_data: {
+                    id: parseInt(id),
+                    user_id: user.id
+                }
+            },
             data: {
                 title: title,
                 code_link: code_link,
@@ -90,13 +110,21 @@ const updateProject: controller_interface['basicController'] = async (req, res) 
 };
 const deleteProject: controller_interface['basicController'] = async (req, res) => {
     try {
-        const { user } = res.locals
+        const { error } = deleteValidate.validate(req.params);
+        if (error) {
+            throw new ErrorHelper(error.message);
+        }
+        const user: localsInterface['decoded_user'] = res.locals.user
         const { id } = req.params
-        const project_id = parseInt(id)
 
         const data = await prisma.project.delete({
-            where: { user_id: user.id, id: project_id },
+            where: {
+                users_data: {
+                    user_id: user.id, id: parseInt(id)
+                }
+            },
         });
+
         if (!data) {
             throw new ErrorHelper('The project can not be deleted!');
         }
@@ -106,7 +134,7 @@ const deleteProject: controller_interface['basicController'] = async (req, res) 
                 project_count: { decrement: 1 }
             }
         })
-        sendResponse(res, StatusCodes.OK, 'Project removed.', true, {});
+        sendResponse(res, StatusCodes.OK, 'Project removed.', true, data);
     } catch (error: any) {
         sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, error.message, false, error);
     }

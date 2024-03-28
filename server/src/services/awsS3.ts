@@ -44,7 +44,7 @@ async function uploadFile(fileBuffer: Buffer, fileName: string, mimetype: string
         ContentType: mimetype,
     };
 
-    await s3Client.send(new PutObjectCommand(uploadParams));
+    return await s3Client.send(new PutObjectCommand(uploadParams));
 }
 
 function deleteFile(fileName: string) {
@@ -57,15 +57,15 @@ function deleteFile(fileName: string) {
 }
 
 async function getObjectSignedUrl(image_name: string) {
-    const params: GetObjectSignedUrlParams = {
-        Bucket: bucketName,
-        Key: image_name,
-    };
+    // const params: GetObjectSignedUrlParams = {
+    //     Bucket: bucketName,
+    //     Key: image_name,
+    // };
 
-    const command = new GetObjectCommand(params);
-    // const seconds = 60;
-    const url = await getSignedUrl(s3Client, command);
-
+    // const command = new GetObjectCommand(params);
+    // // const seconds = 60;
+    // const url = await getSignedUrl(s3Client, command);
+    const url = `https://perzzume.s3.ap-south-1.amazonaws.com/${image_name}`
     return url;
 }
 

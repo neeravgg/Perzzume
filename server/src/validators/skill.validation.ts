@@ -1,9 +1,7 @@
 import Joi from 'joi';
 
 const addValidate = Joi.object({
-    company: Joi.string().required(),
-    job_title: Joi.string().required(),
-    description: Joi.string().required(),
+    title: Joi.string().required(),
 });
 
 const getListValidate = Joi.object({
@@ -12,9 +10,7 @@ const getListValidate = Joi.object({
     pageSize: Joi.string(),
 });
 const updateValidate = Joi.object({
-    company: Joi.string(),
-    job_title: Joi.string(),
-    description: Joi.string(),
+    title: Joi.string(),
     image_name: Joi.string(),
     id: Joi.string().required(),
 });

@@ -9,7 +9,7 @@ import {
 	uploadImage,
 	uploadMulter
 } from '../middlewares/image.upload.middleware';
-import wrapper from '../middlewares/wrapper.middleware';
+import { uploadWrapper } from '../middlewares/wrapper.middleware';
 
 import {
 	getAboutDetail,
@@ -25,7 +25,7 @@ router.post(
 	'/add',
 	authenticateUser,
 	uploadMulter.single('image'),
-	wrapper(uploadImage, { height: 800, width: 600 }),
+	uploadWrapper(uploadImage, { height: 800, width: 600 }),
 	addAboutDetail
 );
 // PUT
@@ -33,7 +33,7 @@ router.put(
 	'/update',
 	authenticateUser,
 	uploadMulter.single('image'),
-	wrapper(uploadImage, { height: 800, width: 600 }, true),
+	uploadWrapper(uploadImage, { height: 800, width: 600 }, true),
 	updateAboutDetail
 );
 

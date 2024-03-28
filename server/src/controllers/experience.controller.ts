@@ -85,6 +85,8 @@ const updateExperience: controller_interface['basicController'] = async (req, re
         if (error) {
             throw new ErrorHelper(error.message);
         }
+        const user: localsInterface['decoded_user'] = res.locals.user
+
         const { company, job_title, description, id }: modal_interface['experience'] = req.body;
         const updateData = {
             company: company,
@@ -92,7 +94,12 @@ const updateExperience: controller_interface['basicController'] = async (req, re
             description: description,
         }
         const data = await prisma.experience.update({
-            where: { id: parseInt(id) },
+            where: {
+                users_data: {
+                    id: parseInt(id),
+                    user_id: user.id
+                }
+            },
             data: updateData
         })
 
@@ -113,7 +120,11 @@ const deleteExperience: controller_interface['basicController'] = async (req, re
         const { id } = req.params
 
         const data = await prisma.experience.delete({
-            where: { user_id: user.id, id: parseInt(id) },
+            where: {
+                users_data: {
+                    user_id: user.id, id: parseInt(id)
+                }
+            },
         });
         if (!data) {
             throw new ErrorHelper('The experience can not be deleted!');
@@ -124,7 +135,7 @@ const deleteExperience: controller_interface['basicController'] = async (req, re
                 experience_count: { decrement: 1 }
             }
         })
-        sendResponse(res, StatusCodes.OK, 'Experience removed.', true, {});
+        sendResponse(res, StatusCodes.OK, 'Experience removed.', true, data);
     } catch (error: any) {
         sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, error.message, false, error);
     }

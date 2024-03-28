@@ -9,17 +9,35 @@ import {
 } from '../controllers/project.controller';
 import { authenticateUser } from '../middlewares/authentication.middleware';
 import { deleteImage, uploadImage, uploadMulter } from "../middlewares/image.upload.middleware";
+import { dataByUserWrapper, uploadWrapper } from "../middlewares/wrapper.middleware";
+import { dataByUser } from "../middlewares/dataByUser.middleware";
 
 
-router.get('/get_list/:user_id', getProjectList);
+router.post('/get_list', uploadMulter.none(), getProjectList);
 
-router.post('/add', authenticateUser, uploadMulter.single('image'),
-    uploadImage, addProject);
+router.post(
+    '/add',
+    authenticateUser,
+    uploadMulter.single('image'),
+    uploadWrapper(uploadImage, { height: 520, width: 520 }),
+    addProject
+);
 
-router.put('/update', authenticateUser, uploadMulter.single('image'),
-    uploadImage, updateProject);
+router.put(
+    '/update',
+    authenticateUser,
+    uploadMulter.single('image'),
+    dataByUserWrapper(dataByUser, 'project'),
+    uploadWrapper(uploadImage, { height: 520, width: 520 }, true),
+    updateProject
+);
 
-router.delete('/delete/:id', authenticateUser, deleteImage, deleteProject);
+router.delete(
+    '/delete/:id', authenticateUser,
+    dataByUserWrapper(dataByUser, 'project'),
+    deleteImage,
+    deleteProject
+);
 
 
 export default router;

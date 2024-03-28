@@ -78,7 +78,7 @@ const deleteContact: controller_interface['basicController'] = async (req, res) 
                 contact_count: { decrement: 1 }
             }
         })
-        sendResponse(res, StatusCodes.OK, 'Contact deleted.', true, {});
+        sendResponse(res, StatusCodes.OK, 'Contact deleted.', true, data);
     } catch (error: any) {
         sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, error.message, false, error);
     }

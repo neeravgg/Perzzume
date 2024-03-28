@@ -4,6 +4,8 @@ import { middlewareInterface } from '../types/middleware.interface';
 import { generateFileName } from '../helpers/upload.helper';
 import { uploadFile, deleteFile, getObjectSignedUrl } from '../services/awsS3'
 import { ErrorHelper } from '../helpers/error.helper';
+import { sendError } from '../handlers/response.handler';
+import { StatusCodes } from 'http-status-codes';
 
 //  multer
 const storage = multer.memoryStorage()
@@ -36,15 +38,20 @@ const uploadImage: middlewareInterface['uploadImage'] = async (resizeOptions = {
 }
 
 const deleteImage: middlewareInterface['deleteImage'] = async (req, res, next) => {
+    try {
+        const modalDataByUser = res.locals.modal_data
 
-    const imageName: string = req.body.image_name
-    if (!imageName) {
-        throw new ErrorHelper('Try again!')
+        const imageName: string = req.body.image_name || modalDataByUser.image_name
+        if (!imageName) {
+            throw new ErrorHelper('Try again!')
+        }
+
+        await deleteFile(imageName)
+
+        return next()
+    } catch (error) {
+        sendError(res, StatusCodes.INTERNAL_SERVER_ERROR, (error as Error).message, false, error);
     }
-    await deleteFile(imageName)
-
-    return next()
-
 }
 
 export { uploadMulter, uploadImage, deleteImage }

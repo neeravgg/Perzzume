@@ -11,8 +11,8 @@ interface modal_interface {
 }
 
 interface Token {
-    id?: number;
-    user_id: number;
+    id: string;
+    user_id: string;
     token: string;
     ip: string;
     user_agent: string;
@@ -21,15 +21,15 @@ interface Token {
 }
 
 interface Skill {
-    id?: number;
-    user_id?: number;
+    id: string;
+    user_id?: string;
     title: string;
     user?: User;
 }
 
 interface Project {
-    id?: number;
-    user_id?: number;
+    id: string;
+    user_id?: string;
     title: string;
     code_link: string;
     demo_link: string;

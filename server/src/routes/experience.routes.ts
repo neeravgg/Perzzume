@@ -10,26 +10,29 @@ import {
 
 import { authenticateUser } from '../middlewares/authentication.middleware';
 import { deleteImage, uploadImage, uploadMulter } from "../middlewares/image.upload.middleware";
-import wrapper from "../middlewares/wrapper.middleware";
+import { dataByUserWrapper, uploadWrapper } from "../middlewares/wrapper.middleware";
+import { dataByUser } from "../middlewares/dataByUser.middleware";
 
-router.post('/get_list', getExperienceList);
+router.post('/get_list', uploadMulter.none(), getExperienceList);
 router.post(
 	'/add',
 	authenticateUser,
 	uploadMulter.single('image'),
-	wrapper(uploadImage, { height: 520, width: 520 }),
+	uploadWrapper(uploadImage, { height: 520, width: 520 }),
 	addExperience
 );
 router.put(
 	'/update',
 	authenticateUser,
 	uploadMulter.single('image'),
-	wrapper(uploadImage, { height: 520, width: 520 }, true),
+	dataByUserWrapper(dataByUser, 'experience'),
+	uploadWrapper(uploadImage, { height: 520, width: 520 }, true),
 	updateExperience
 );
 router.delete(
 	'/delete/:id',
 	authenticateUser,
+	dataByUserWrapper(dataByUser, 'experience'),
 	deleteImage,
 	deleteExperience
 );
