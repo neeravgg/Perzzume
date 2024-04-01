@@ -2,11 +2,13 @@ import { createSlice, } from '@reduxjs/toolkit'
 
 
 interface State {
-    checkServerLoader: boolean
+    checkServerLoader: boolean,
+    loader: boolean
 }
 
 const initialState: State = {
-    checkServerLoader: false
+    checkServerLoader: false,
+    loader: false
 }
 
 export const loaderSlice = createSlice({
@@ -18,7 +20,13 @@ export const loaderSlice = createSlice({
             state.checkServerLoader = true
         },
         disableCheckServerLoader: (state) => {
-            state.checkServerLoader = true
+            state.checkServerLoader = false
+        },
+        enableLoader: (state) => {
+            state.loader = true
+        },
+        disableLoader: (state) => {
+            state.loader = false
         },
     }
 })

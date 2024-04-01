@@ -15,9 +15,6 @@ const SkillPage = lazy(() => import('./pages/skill.page.js'));
 interface RouteConfig {
 	path: string;
 	element: React.ReactElement;
-	redirectPath?: string;
-	isAllowed?: boolean;
-	isCommon?: boolean;
 } // Removed comment for clarity
 
 const AppRoutes = () => {
@@ -25,16 +22,64 @@ const AppRoutes = () => {
 		{
 			path: '*',
 			element: <Navigate to='/login' replace />,
-			isAllowed: true,
 		},
-		{ path: '/login', element: <LoginPage />, isCommon: false },
-		{ path: '/Register', element: <RegisterPage />, isCommon: false },
+		{
+			path: '/login',
+			element: (
+				<ProtectRoute redirectPath={'/'} isCommon={false}>
+					<LoginPage />
+				</ProtectRoute>
+			),
+		},
+		{
+			path: '/Register',
+			element: (
+				<ProtectRoute redirectPath={'/'} isCommon={false}>
+					<RegisterPage />
+				</ProtectRoute>
+			),
+		},
 
-		{ path: '/dashboard', element: <DashboardPage /> },
-		{ path: '/about', element: <AboutPage /> },
-		{ path: '/experiences', element: <ExperiencePage /> },
-		{ path: '/projects', element: <ProjectPage /> },
-		{ path: '/skills', element: <SkillPage /> },
+		{
+			path: '/',
+			element: (
+				<ProtectRoute>
+					<DashboardPage />
+				</ProtectRoute>
+			),
+		},
+		{
+			path: '/about',
+			element: (
+				<ProtectRoute>
+					<AboutPage />
+				</ProtectRoute>
+			),
+		},
+		{
+			path: '/experiences',
+			element: (
+				<ProtectRoute>
+					<ExperiencePage />
+				</ProtectRoute>
+			),
+		},
+		{
+			path: '/projects',
+			element: (
+				<ProtectRoute>
+					<ProjectPage />
+				</ProtectRoute>
+			),
+		},
+		{
+			path: '/skills',
+			element: (
+				<ProtectRoute>
+					<SkillPage />
+				</ProtectRoute>
+			),
+		},
 	];
 
 	return (
@@ -42,13 +87,7 @@ const AppRoutes = () => {
 			<Suspense fallback={<Spinner />}>
 				<Routes>
 					{routes.map((route) => (
-						<ProtectRoute
-							redirectPath={route.redirectPath}
-							isAllowed={route.isAllowed}
-							isCommon={route.isCommon}
-						>
-							<Route key={route.path} {...route} />
-						</ProtectRoute>
+						<Route key={route.path} {...route} />
 					))}
 				</Routes>
 			</Suspense>

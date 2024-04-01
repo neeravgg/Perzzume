@@ -1,6 +1,5 @@
-import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { RootState } from '../../app/store';
+import { useAppSelector } from '@/redux/store';
 
 const StyledSpinnerWrapper = styled.div`
 	background: ${({ theme }) => theme.colors.backgroundColor};
@@ -77,14 +76,14 @@ const StyledSpinner = styled.div`
 	}
 `;
 
-const Spinner = ({ ServerLoader = false }) => {
-	const { isLoading } = useSelector((state: RootState) => state.report);
+const Spinner = () => {
+	const { loader, checkServerLoader } = useAppSelector((state) => state.loaders);
 
 	return (
 		<>
-			{isLoading ? (
+			{loader || checkServerLoader ? (
 				<>
-					{ServerLoader ? <div>Please wait...</div> : null}
+					{checkServerLoader ? <div>Please wait...</div> : null}
 					<StyledSpinnerWrapper>
 						<StyledSpinner>
 							<div className='rect1'></div>

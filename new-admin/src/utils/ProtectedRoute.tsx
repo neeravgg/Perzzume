@@ -19,13 +19,13 @@ const ProtectRoute = ({
 }: ProtectRouteProps) => {
 	// const dispatch = useDispatch<AppDispatch>();
 	const { checkServerLoader } = useAppSelector((state) => state.loaders);
-	const token = true;
+	const token = false;
 	// useEffect(() => {
 	// 	dispatch(checkServer());
 	// }, [dispatch]);
 
 	if (checkServerLoader) {
-		return <Spinner ServerLoader={true} />;
+		return <Spinner />;
 	} else {
 		const isAuthTokenValid = isAllowed ? true : isCommon ? token : !token;
 
