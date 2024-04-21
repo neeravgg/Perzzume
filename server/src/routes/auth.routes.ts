@@ -7,7 +7,7 @@ import { uploadMulter } from "../middlewares/image.upload.middleware";
 
 router.post("/admin/login", uploadMulter.none(), adminLogin);
 router.post("/admin/register", uploadMulter.none(), adminRegister);
-router.get("/admin/refresh", refreshToken);
+router.get("/admin/refresh/auth", refreshToken);
 router.get("/admin/logout", authenticateUser, logout);
 
 

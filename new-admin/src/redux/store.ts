@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import loadersReducer from './features/loaders.slice'
+import loadersReducer from './features/state.slices/loaders.slice'
 import { TypedUseSelectorHook, useSelector } from "react-redux";
 
 export const store = configureStore({
